@@ -8,7 +8,7 @@ class Temel():
     def adresyaz(self):
         print("Sayın: {}\n {}\n {}\n{}".format(self.fullname(), self.cadde,self.ilce,self.sehir))
     def fullname(self):
-        print(self.ad + " " + self.soyad)
+        return self.ad + " " + self.soyad
 
 class Ogrenci(Temel):
     pass
@@ -23,7 +23,7 @@ class Egitmen(Temel):
         self.maas = maas
         self.unvan = unvan
     def fullname(self):
-        print(self.unvan + " "+  self.ad + " " + self.soyad)
+        return self.unvan + " "+  self.ad + " " + self.soyad
     def maasyaz(self):
         print(self.maas)
     

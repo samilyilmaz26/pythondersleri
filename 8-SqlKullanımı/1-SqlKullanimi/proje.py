@@ -17,7 +17,7 @@ def Listele():
     print(row)
      
     selen = dict(zip(row, olist))
-    #print(selen)    
+    print(selen)    
  
 
 # def Ekle(ad,soyad,maas):

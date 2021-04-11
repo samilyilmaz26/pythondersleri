@@ -8,6 +8,10 @@ class Student(object):
         first_name, last_name = map(str, name_str.split(' '))
         student = cls(first_name, last_name)
         return student
+    @classmethod
+    def from_string2(cls, f,l):
+        student = cls(f ,l)
+        return student
     @staticmethod
     def is_full_name(name_str):
         names = name_str.split(' ')
@@ -15,7 +19,11 @@ class Student(object):
 scott = Student('Scott',  'Robinson')
 
 scott2 = Student.from_string('Scott Robinson')
+scott3 = Student.from_string2('Scott', 'Robinson')
 print(scott2.first_name)
+print(scott3.first_name)
 print(Student.is_full_name('Scott Robinson'))
+print(Student.is_full_name('Scott, Robinson'))
+ 
  
  
