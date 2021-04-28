@@ -1,0 +1,3 @@
+Tüm derslerde 
+print(enet_model.coef_)
+print(enet_model.intercept_)

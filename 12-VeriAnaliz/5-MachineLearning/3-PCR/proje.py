@@ -43,14 +43,14 @@ print(pcr_model.coef_)
 #     Tahmin 
 y_pred = pcr_model.predict(X_reduced_train)
 print(y_pred [0:6])
-print(np.sqrt(mean_squared_error(y_train,y_pred))) #anlatma
+print(np.sqrt(mean_squared_error(y_train,y_pred)))  #google da bul anlat
 print(df["Salary"].mean()) 
 print(r2_score(y_train,y_pred)) # Best score 1.0
 
 pca_test = PCA()
 X_reduced_test = pca_test.fit_transform(scale(X_test)) #fit transform hem fit hemde indirgeme yapar
 y_pred_t = pcr_model.predict(  X_reduced_test)
-print( "mse", np.sqrt(mean_squared_error(y_test,y_pred_t))) #anlatma
+print( "mse", np.sqrt(mean_squared_error(y_test,y_pred_t)))  
 
 # Degişken Sınırlama ile Tahmin
 lm = LinearRegression()
