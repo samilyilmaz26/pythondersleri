@@ -1,0 +1,27 @@
+İlk Projede 
+app= Flask(__name__)
+
+.... aralara Route ve fonkisyomlar yazılır
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+----------------------------------------------
+proje içinde templates klasör yaratılır.
+istenirse templates altına lat klasör de açılır
+templates  ve alt klasörde  altında html sayfaları bulunur
+layout ve navbar sayfalarıda templates altında bulunur
+----------------------------------------------------------
+Basit sayfa yerine form oluşturulacak ise wtform opsiyonel olarak kullanıbilir
+pip install WTForms ile yüklenir
+flask  Form Validation with WTForms
+form define ve htm içinde kullanı bulunur.
+__________________________________________________________________
+kullanıcı şifreleri kriptolu saklanması için passlib paketi yüklenir
+pip install passlib
+--------------------------------------------------------------------
+
+
+
+

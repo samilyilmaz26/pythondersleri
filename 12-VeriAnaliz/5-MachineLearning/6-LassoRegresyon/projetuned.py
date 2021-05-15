@@ -42,3 +42,5 @@ lasso_tuned.fit(X_train,y_train)
 y_pred = lasso_tuned.predict(X_test)
 print("mse" ,np.sqrt(mean_squared_error(y_test,y_pred)))  
 print("r2",r2_score(y_test,y_pred)) # Best score 1.0 
+print(lasso_tuned.coef_)
+print(lasso_tuned.intercept_)

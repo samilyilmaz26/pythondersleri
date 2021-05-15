@@ -25,9 +25,9 @@ clf = LocalOutlierFactor(n_neighbors=20 ,contamination=0.1)
 print(clf.fit_predict(df))
 df_scores = clf.negative_outlier_factor_
 
-esik_deger = np.sort(df_scores)[13] 
-baski_deger = df[df_scores == esik_deger] 
-ar_extreme = df_scores > esik_deger
+thresh_hold = np.sort(df_scores)[13] 
+baski_deger = df[df_scores == thresh_hold] 
+ar_extreme = df_scores > thresh_hold
 df_extreme = df[~ar_extreme]
 # print(df_extreme)
 # print(baski_deger)

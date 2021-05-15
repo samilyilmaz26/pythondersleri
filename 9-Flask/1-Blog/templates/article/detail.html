@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block page %}
+
+<h3>Makale Detayları </h3>
+<hr>
+ {{article.id}}
+ <br>
+   <b >{{article.title}}</b>
+ <br>
+ 
+ {{article.content|safe}}
+ <br>
+ {{article.author}}
+{% endblock %}

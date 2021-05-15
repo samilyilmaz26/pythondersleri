@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block page %}
+
+<h3>Login </h3>
+<hr>
+{% from "/includes/formhelpers.html" import render_field %}
+<form method=post>
+    <div class="col-md-5">
+  <dl>
+    {{ render_field(form.username,class="form-control")  }}
+    {{ render_field(form.password ,class="form-control")  }}
+  </dl>
+  <p><input type=submit value="Giriş">
+  </div>
+</form>
+
+{% endblock %}

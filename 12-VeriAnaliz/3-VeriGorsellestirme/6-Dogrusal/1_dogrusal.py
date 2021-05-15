@@ -1,3 +1,4 @@
+#%%
 import  seaborn as sea
 import  matplotlib.pyplot as plt
 
@@ -8,3 +9,5 @@ print(sea.lmplot (x= "total_bill", y= "tip", hue='smoker',col="time" ,  data = t
 print(sea.lmplot (x= "total_bill", y= "tip", hue='smoker',
                   col="time" ,row = "sex", data = tipsDf))
 
+
+# %%

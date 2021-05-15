@@ -7,7 +7,7 @@ print(sea.lineplot(x="timepoint", y="signal", data=fm))
 print(sea.lineplot(x="timepoint", y="signal",hue= "event" , data=fm))
 print(sea.lineplot(x="timepoint", y="signal",
                    hue= "event" ,style = "event", data=fm))
-print(sea.lineplot(x="timepoint", y="signal",
+# print(sea.lineplot(x="timepoint", y="signal",
 #                    hue= "region" , data=fm))
 # print(sea.lineplot(x="timepoint", y="signal",
 #                    hue= "event" ,style = "event",

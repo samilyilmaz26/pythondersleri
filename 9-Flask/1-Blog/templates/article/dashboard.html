@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block page %}
+<div class="col-md-7">
+<h3>Dashboard</h3>
+<h2>Hoşgeldin {{session["username"]}} </h2>
+<hr>
+<a class="btn btn-primary" href="/article/addarticle">Yeni giriş</a>
+ <table class="table table-bordered table-hover">
+     <thead>
+         <tr>
+             <th>id</th>
+             <th>Başlık</th>
+             <th>Güncelle</th>
+             <th>Sil</th>
+         </tr>
+     </thead>
+     <tbody>
+         {% for el in articles %}
+                 <tr>
+                     <td>{{el.id}} </td>
+                      <td>{{el.title}}  </td>
+                      <td><a class="btn btn-success"  href="/article/edit/{{el.id}}">Güncelle</a></td>
+                      <td><a class="btn btn-danger"  href="/article/delete/{{el.id}}">Sil</a></td>
+                 </tr>
+         {% endfor %}
+         
+     </tbody>
+ </table>
+</div>
+
+ 
+    
+ 
+ 
+{% endblock %}

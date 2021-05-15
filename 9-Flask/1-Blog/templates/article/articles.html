@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block page %}
+
+<h3>Makaleler</h3>
+<hr>
+ <table class= "table table-striped table-hover table-bordered">
+     <thead>
+         <tr>
+             <th>Id</th>
+             <th>Başlık </th>
+         </tr>
+     </thead>
+       <tbody>
+           {% for el in articles %}
+                  <tr>
+                      <td>{{el.id}}</td>
+                      <td> <a href="/article/detail/{{el.id}}">{{el.title}}</a> </td>
+                  </tr>
+           {% endfor %}
+           
+       </tbody>
+ </table>
+ 
+{% endblock %}

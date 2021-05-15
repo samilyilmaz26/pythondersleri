@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block page %}
+
+<h3>Makale Ekleme</h3>
+<hr>
+{% from "/includes/formhelpers.html" import render_field %}
+<form method=post>
+    <div class="col-md-12">
+  <dl>
+    {{ render_field(form.title,class="form-control")  }}
+    {{ render_field(form.content ,class="form-control")  }}
+  </dl>
+  <p><input class="btn btn-outline-primary" type=submit value="Ekle">
+  </div>
+</form>
+ 
+{% endblock %}
