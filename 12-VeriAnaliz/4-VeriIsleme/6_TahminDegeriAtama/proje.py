@@ -6,7 +6,13 @@ import numpy as np
 import pandas as pd
 from ycimpute.imputer import knnimput #nearest
 
+# DF arraye çevrilir . Çünkü tahmin array üzerinden yapılır
+# Arraydeli null değerler doldurulru
+# DF deki değişken isimleri saklanır
+# Dolurulmuş array ile değişken isimleri birleştirilip yeni bir DF oluşturulur. 
+
 df = sns.load_dataset("titanic")
+print(df.dtypes)
 df = df.select_dtypes(include =["float64","int64"])
 print(df)
 print(df.isnull().sum())

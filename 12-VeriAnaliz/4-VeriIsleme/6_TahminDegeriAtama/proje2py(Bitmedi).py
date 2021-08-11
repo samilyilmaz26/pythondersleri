@@ -16,5 +16,5 @@ arr_df = np.array(df)
 print(arr_df)
 print(arr_df.shape)
 
-# arr_dffill =  iterforest.IterInput().complete(arr_df)
+arr_dffill =  iterforest.IterImput().complete(arr_df)
  

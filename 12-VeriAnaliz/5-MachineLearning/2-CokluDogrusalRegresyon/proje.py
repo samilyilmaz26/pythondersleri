@@ -36,9 +36,9 @@ yeni_veri = pd.DataFrame(yeni_veri).T
 print(yeni_veri)
 satis = model.predict(yeni_veri)
 print(satis)
-rmse = mt.sqrt(mean_squared_error(y_train,model.predict(X_train)))
+rmse = mt.sqrt(mean_squared_error(y_train,model.predict(X_train)))# Best score 1.0 
 print(rmse)
-rmse2 = mt.sqrt(mean_squared_error(y_test,model.predict(X_test)))
+rmse2 = mt.sqrt(mean_squared_error(y_test,model.predict(X_test)))# Best score 1.0 
 print(rmse2)
 print(model.score(X_train,y_train))
 #  Model  Doğrulama Tuning random_state=42 değiştirilir 

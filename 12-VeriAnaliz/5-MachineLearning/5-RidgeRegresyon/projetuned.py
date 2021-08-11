@@ -15,7 +15,7 @@ print(df.head())
 df =  df.dropna()
 print(df.info())
 print(df.describe().T)
-d1 = df["League"]
+ 
 dummies = pd.get_dummies(df[["League","Division","NewLeague"]])
 print(dummies.head())
 y = df["Salary"]
@@ -38,7 +38,7 @@ coff = []
 ridge_model = Ridge()
 for i in alphas:
     ridge_model.set_params(alpha = i)
-    ridge_model.fit(X_train, y_train)
+    ridge_model.fit(X_train, y_train)  # rigge model = olacak başında 
     coff.append(ridge_model.coef_)
 print(alphas[0:5])
 

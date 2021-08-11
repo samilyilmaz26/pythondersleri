@@ -15,7 +15,6 @@ print(df.head())
 df =  df.dropna()
 print(df.info())
 print(df.describe().T)
-d1 = df["League"]
 dummies = pd.get_dummies(df[["League","Division","NewLeague"]])
 print(dummies.head())
 y = df["Salary"]

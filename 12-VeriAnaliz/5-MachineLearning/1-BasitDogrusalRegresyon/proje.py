@@ -32,7 +32,7 @@ print(y[0:5])
 print("Sales" + str("%.2f" %model.params[0]) + " + TV"  +     " * " + str("%.2f" %model.params[1]) )
 def CalculateSales(tvExpense) :
     return 7.03 + tvExpense*0.05
-    6
+    
 
 print(CalculateSales(30))
 
