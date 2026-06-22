@@ -1,0 +1,28 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+criteria = ["Price", "Quality", "Delivery"]
+    [0, 3, 2],
+    [1, 0, 2],
+    [0, 2, 0]
+ exper effect points
+
+          Price   Quality  Delivery
+Price       0        3        2 
+Quality     1        0        2
+Delivery    0        2        0
+if you want good quality you pay more coefficient 3
+if you want good delivery time  you pay more coefficient 2

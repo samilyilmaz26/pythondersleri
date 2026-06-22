@@ -1,31 +1,32 @@
 import sqlite3
-con = sqlite3.connect("personel.db")
-cursor = con.cursor() 
-
-# def Listele2():
-#     cursor.execute('select * from personel')
-#     olist  = cursor.fetchall()
-#     for i in olist:
-#         print(i)
+con = sqlite3.connect("personel.db") #◘Connection
+cursor = con.cursor() # sql komutları
+                       # Commit kaydet
 
 def Listele():
     cursor.execute('select * from personel')
- 
-    row = list(zip(cursor.description))
-     
     olist  = cursor.fetchall()
-    print(row)
+    for i in olist:
+        print(i)
+
+# def Listele():
+#     cursor.execute('select * from personel')
+ 
+#     row = list(zip(cursor.description))
      
-    selen = dict(zip(row, olist))
-    print(selen)    
+#     olist  = cursor.fetchall()
+#     print(row)
+     
+#     selen = dict(zip(row, olist))
+#     print(selen)    
  
 
 # def Ekle(ad,soyad,maas):
 #     cursor.execute('insert into personel (ad,soyad ,maas) values(? , ? ,?)', (ad,soyad,maas))
 #     con.commit()
-# ad = input("Adı :")
-# soyad  = input("Soyad :")
-# maas = input("Maaş :")
+# ad = input("Adı ?:")
+# soyad  = input("Soyad ? :")
+# maas = input("Maaş ?:")
 # Ekle(ad,soyad,maas)
 
 # def Guncel(id ,maas):
@@ -36,11 +37,12 @@ def Listele():
 # Guncel(id ,maas)
 
 
-# def Sil(id ):
-#     cursor.execute('delete from   personel  where id =? ', (id,))
-#     con.commit()
-# id = input("id  :")
-# Sil(id)
+
+def Sil(id ):
+    cursor.execute('delete from   personel  where id =? ', (id,))
+    con.commit()
+id = input("id  :")
+Sil(id)
 Listele()
  
 

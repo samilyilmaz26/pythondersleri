@@ -1,6 +1,6 @@
-dosya = open("dosya.txt", "r", encoding="utf-8")
+file = open("dosya.txt", "r", encoding="utf-8")
 
-for i in dosya:
+for i in file:
     print(i)
     
-dosya.close() 
+file.close() 

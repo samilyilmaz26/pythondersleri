@@ -172,3 +172,15 @@ __________
 https://github.com/googlearchive/code-prettify
 __________
 pip  freeze 
+___________________________________fast api______________________________________
+ python.exe -m venv fastapivenv
+
+cd .\fastapivenv\
+cd .\Scripts\
+.\activate
+pip list see awrning and apply
+.\deactivate
+.\activate
+go back project root
+
+

@@ -1,0 +1,18 @@
+VIKOR’da:
+
+S → toplam fayda kaybı
+
+R → en kötü kriter performansı
+
+Q → nihai uzlaşık çözüm indeksi
+
+📌 En küçük Q değeri → en iyi alternatif
+
+Örnek yorum:
+
+Alternatif	Q
+A2	en küçük
+A3	orta
+A1	en büyük
+
+➡️ A2 en iyi tedarikçi olur.

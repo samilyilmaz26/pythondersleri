@@ -28,6 +28,8 @@ def about():
 @app.route('/article/articles')
 def article():
     con = sqlite3.connect("blog.db")
+    print("*************con******************")
+    print (type(con))
     con.row_factory = dict_factory
     cursor = con.cursor()
     sorgu = "select * from articles order by id desc"

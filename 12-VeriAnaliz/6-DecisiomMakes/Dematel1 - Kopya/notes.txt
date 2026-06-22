@@ -1,0 +1,36 @@
+ Doğrudan ilişki matrisini alıyor
+  Otomatik normalize ediyor
+ Toplam ilişki matrisini hesaplıyor
+  Sebep / sonuç kriterlerini (D−R) net biçimde veriyor
+
+Çıktıyı Nasıl Yorumlarsın?
+
+D − R > 0 → sebep kriter
+
+D − R < 0 → sonuç kriter
+
+D + R → kriterin sistemdeki toplam önemi
+
+Kriter	D−R	Yorum
+Fiyat (C1)	+1.30	 Güçlü sebep
+Kalite (C2)	−0.55	Sonuç
+Teslimat (C3)	−0.75	Sonuç
+
+Kriter	D+R	Anlam
+Fiyat	2.98	Yüksek
+Kalite	3.67	En önemli
+Teslimat	2.89	Orta
+
+T Matrisi Nasıl Yorumlanır?
+
+ T12=1.04 → Fiyat → Kalite etkisi çok güçlü
+ 𝑇23= =0.72 → Kalite → Teslimat etkisi orta–yüksek
+
+
+ 
+
+ 
+	​
+
+	​
+

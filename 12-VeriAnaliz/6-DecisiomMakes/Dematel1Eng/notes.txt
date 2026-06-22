@@ -1,0 +1,12 @@
+virtual env
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+
+install numpy 
+pip install numpy 
+
+D − R → Reason / Result > 0
+
+D + R → Total importance   > 0 
+
+ 

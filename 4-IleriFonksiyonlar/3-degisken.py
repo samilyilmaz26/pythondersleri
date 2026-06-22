@@ -1,5 +1,6 @@
-def selamver(isim):
-    print("Merhaba " +isim)
-hello = selamver
+def sayhello(name):
+    print("Hi " +name)
+hello = sayhello
 print(type(hello))
 hello("Şamil")
+sayhello("şamil ")

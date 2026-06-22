@@ -41,8 +41,7 @@ print(meyvalar2)
 liste1 = [1,2,3]
 liste2 = [4,5,6]
 liste3 = [7,8,9]
-birlesikListe = [liste1 , liste2 ,liste3]
-print(birlesikListe)
-print(birlesikListe[1][2])
-birlesikListe[1][2] += 10
-print(birlesikListe[1][2])
+tls  = [liste1 , liste2 ,liste3]
+ 
+print(tls[1][2])
+ 
