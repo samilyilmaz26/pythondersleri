@@ -11,8 +11,11 @@ __pycache__/
 
 # Virtual environments
 venv/
+.env/
+.venv/
 env/
 ENV/
+fastapivenv/
 
 # Database files
 *.db
@@ -25,3 +28,6 @@ Thumbs.db
 # RAR files
 *.rar
 *.zip
+# git files
+.git/
+**/.git/

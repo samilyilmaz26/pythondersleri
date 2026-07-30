@@ -1,0 +1,32 @@
+{%extends "layout.html"%} {%block page%}
+  
+
+<h3>Personel Ekleme ...</h3>
+
+<form method="POST">
+  <div class="col-md-7">
+    <div class="mb-3">
+      <label class="form-label">Adı</label>
+      <input type="text" class="form-control" name="name">
+    </div>
+     <div class="mb-3">
+      <label class="form-label">Soyadı</label>
+      <input type="text" class="form-control" name="surname">
+    </div>
+     <div class="mb-3">
+      <label class="form-label">Maaş</label>
+      <input type="text" class="form-control" name="salary">
+    </div>
+    <label for="birthdate">Doğum Tarihi</label>
+    <input type="date" name="birthdate" class="form-control"  />
+    <label for="cars">Şehir</label>
+    <select name="cityid" id="cityid" , class="form-control">
+      {% for c in cities %}
+      <option value="{{c.id}}">{{c.name}} </option>
+      {% endfor %}
+    </select>
+    <p><input type="submit" class="btn btn-primary" value="Yeni Kayıt" /></p>
+  </div>
+</form>
+
+{%endblock page%}

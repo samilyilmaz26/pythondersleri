@@ -1,0 +1,17 @@
+{%extends "layout.html"%}
+{%block page%}
+
+<h3>Aşağıdaki Kaydı Silmek İstediğinizden Emin misiniz ?</h3>
+
+<form method="POST">
+    <div class="col-md-7">
+        <div class="mb-3">
+            <label class="form-label">Şehir Ad</label>
+            <input type="text" class="form-control" name="name" value="{{ city.name }}" readonly>
+        </div>
+         
+        <p><input type="submit" class="btn btn-danger" value="Sil"></p>
+    </div>
+</form>
+
+{%endblock page%}

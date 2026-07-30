@@ -22,3 +22,4 @@ meyva = ("Elma","Armut","Ananas")
 print(meyva[1])
 #meyva[0] = "Muz"
 #demet.remove("Elma")
+ 

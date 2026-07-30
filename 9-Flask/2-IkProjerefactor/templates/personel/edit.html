@@ -1,0 +1,44 @@
+{%extends "layout.html"%} {%block page%}
+
+<h3>Personel Güncelleme ...</h3>
+
+<form method="POST">
+  <div class="col-md-7">
+     <div class="mb-3">
+      <label class="form-label">Adı</label>
+      <input type="text" class="form-control" name="name" value="{{personel.name}}">
+    </div>
+     <div class="mb-3">
+      <label class="form-label">Soyadı</label>
+      <input type="text" class="form-control" name="surname" value="{{personel.surname}}">
+    </div>
+     <div class="mb-3">
+      <label class="form-label">Maaş</label>
+      <input type="text" class="form-control" name="salary" value="{{personel.salary}}">
+    </div>
+    <label for="birthdate">Doğum Tarihi </label>
+    <input
+      type="date"
+      name="birthdate"
+      class="form-control"
+      value="{{personel.birthdate}}"
+    />
+    <label for="cityid">Şehir</label>
+    <select name="cityid" id="cityid" , class="form-control">
+    
+      {% for c in cities %} 
+      {% if personel.cityid == c.id %}
+      <option value="{{c.id}}" selected>{{c.name}} </option>
+      {% else %}
+      <option value="{{c.id}}">{{c.name}} </option>
+      {% endif %}
+      {% endfor %}
+      
+    
+    </select>
+
+    <p><input type="submit" class="btn btn-primary" value="Yeni Kayıt" /></p>
+  </div>
+</form>
+
+{%endblock page%}

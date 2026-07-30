@@ -1,4 +1,4 @@
-import pypyodbc
+import sqlite3
 
 
 class Ogrenci():
@@ -14,27 +14,15 @@ class Ogrenci():
 
 
 class Libs():
-    def __init__(self):
-        self.baglanti_kur()
+     
 
-    def baglanti_kur(self):
-        self.db = pypyodbc.connect(
-            'Driver={SQL Server};'
-            'Server=DESKTOP-PG28H37\SQLEXPRESS'
-            'Database=OgrenciDB;'
-            'Trusted_Connection=True;'
-        )
-        self.cursor = self.db.cursor();
-
-    def baglanti_kapat(self):
-        self.db.close();
-
+   
     def Liste(self):
         sorgu = "Select * from Ogrenciler"
         self.cursor.execute(sorgu)
         olist = self.cursor.fetchall()
         for i in olist:
-            ogrenci = Ogrenci(i[0], i[1], i[2], i[3])
+            ogrenci = Ogrenci(*i)
             print(ogrenci)
     def ListbyName(self):
          isim  =   input(" İsim giriniz")
@@ -42,7 +30,7 @@ class Libs():
          self.cursor.execute(sorgu,(isim,))
          olist =self.cursor.fetchall()
          for i in olist:
-              ogrenci = Ogrenci(i[0], i[1], i[2], i[3])
+              ogrenci = Ogrenci(*i)
               print(ogrenci)
     def Sil(self):
         id = int(input("Id Giriniz"))

@@ -1,3 +1,4 @@
+from functools import wraps
 user = "Şamil"
 password = "123"
 
@@ -14,11 +15,10 @@ def sayfa2(user,password):
     else:
         print ("Bu Sayfaya Giriş Yetkiniz Yok")
     
-
-
-def login(fonksiyon):
+def login(func):
     print("Merhaba")
-    def wrapper(user,password):
+    @wraps(func)
+    def wrapper():
          if user == "Şamil" and password == "123":
              print ("login Başarılı")
              print("Sayafamıza Hoşgeldiniz")
@@ -27,8 +27,7 @@ def login(fonksiyon):
     return wrapper
  
 @login
-def sayfa3(user, password):
+def sayfa3():
      pass
-sayfa3("Şamil","123")
-    
-        
+sayfa3()
+ 

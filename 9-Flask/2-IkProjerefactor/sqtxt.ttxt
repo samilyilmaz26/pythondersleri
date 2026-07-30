@@ -1,0 +1,6 @@
+  con = sqlite3.connect("Ogrenci.db")
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+        cmd = "select * from user where username = ?"
+        result =  cursor.execute(cmd, (username,)).fetchone()
+        user = dict(result)

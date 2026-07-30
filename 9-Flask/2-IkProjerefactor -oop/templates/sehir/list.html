@@ -1,0 +1,31 @@
+{%extends "layout.html"%}
+{%block page%}
+ 
+ <h3>Şehirler ...</h3>
+ {% if session["logged_in"] == True %}
+          <small>Hoşgeldin {{session["username"]}} </small>
+ {% endif %}
+ <hr>
+  <a href="/cities/add" class="btn btn-primary">Şehir Ekle</a>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th >id</th>
+            <th >Şehir Adı</th>
+        </tr>
+    </thead>
+    <tbody>
+       {% for sehir in sehirler %}
+       <tr>
+        <td >{{ sehir.id }}</td>
+        <td>{{sehir.ad}}</td>
+        
+        <td><a class="btn btn-success"  href="/cities/edit/{{ sehir.id }}">Güncelle</a></td>
+        <td><a class="btn btn-danger"  href="/cities/delete/{{ sehir.id }}">Sil</a></td>
+    </tr>       
+       {% endfor %}
+       
+    </tbody>
+  </table>
+ {%endblock page%}
+       
