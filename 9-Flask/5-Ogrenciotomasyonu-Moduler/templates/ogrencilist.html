@@ -1,0 +1,26 @@
+{% extends 'copy/layout.html' %}
+{% block page %}
+<h3>Öğrenciler </h3>
+<hr>
+<a class="btn btn-primary" href="/ogrenci/ekle">Öğrenci Ekle</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Adı</th>
+            <th scope="col">Soyadı</th>
+            <th scope="col">Bölüm</th>
+            <th scope="col">İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ogrenci in ogrenciler %}
+        <tr>
+            <td>{{ ogrenci.ad }}</td>
+            <td>{{ ogrenci.soyad }}</td>
+            <td>{{ ogrenci.bolumad }}</td>
+            <td><a href="/ogrenci/guncelle/{{ ogrenci.id }}" class="btn btn-primary btn-sm">Güncelle</a>
+            <td> <a href="/ogrenci/sil/{{ ogrenci.id }}" class="btn btn-danger btn-sm">Sil</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    {% endblock %}

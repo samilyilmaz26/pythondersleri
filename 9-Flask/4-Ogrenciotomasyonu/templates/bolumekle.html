@@ -1,0 +1,13 @@
+{% extends 'copy/layout.html' %}
+{% block page %}
+<h3>Bölüm Ekle</h3>
+<hr>
+    <form action="/bolum/ekle" method="post">
+        <div class="col-md-5">
+            <label for="bolumad" class="form-label">Bölüm Adı</label>
+            <input type="text" class="form-control" id="bolumad" name="bolumad" required> 
+            
+            <button type="submit" class="btn btn-primary">Ekle</button>
+        </div>
+    </form>
+{% endblock %} 

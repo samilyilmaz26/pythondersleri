@@ -1,0 +1,28 @@
+{% extends 'copy/layout.html' %}
+{% block page %}
+    <h3>Bölümler </h3>
+    <a class="btn btn-primary" href="/bolum/ekle">Bölüm Ekle</a>
+    <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id </th>
+            <th>Bölüm Adı</th>
+            <th>Güncelle</th>
+            <th>Sil</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bolum in bolumler %}
+            
+        <tr>
+
+                <td>{{bolum.id}}</td>
+                <td>{{bolum.bolumad}}</td>
+                <td><a class="btn btn-success"  href="/bolum/guncelle/{{ bolum.id }}">Güncelle</a></td>
+                <td><a class="btn btn-danger"  href="/bolum/sil/{{ bolum.id }}">Sil</a></td>
+            </tr>
+            
+        {% endfor %}
+   </tbody>
+</table>
+{% endblock %}

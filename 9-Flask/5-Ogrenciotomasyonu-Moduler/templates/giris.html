@@ -1,0 +1,20 @@
+{% extends 'copy/layout.html' %}
+{% block page %}
+  <h3>Giriş</h3>
+  <hr>
+  <form method="post">
+  <div class="container">
+  <div class="col-md-5">
+    <div class="mb-3">
+      <label  class="form-label">Kullanıcı Adı</label>
+      <input type="text" class="form-control" name="username" >
+    </div>
+    <div class="mb-3">
+      <label  class="form-label">Password</label>
+      <input type="password" class="form-control" name="password">
+    </div>
+  </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Giriş </button>
+</form>
+{% endblock %}
