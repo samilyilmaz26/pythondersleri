@@ -1,9 +1,6 @@
 import sqlite3
 from functools import wraps
 
-import sqlite3
-from functools import wraps
-
 def opendb(func):
     """Decorator to automatically open and safely close the database connection."""
     @wraps(func)

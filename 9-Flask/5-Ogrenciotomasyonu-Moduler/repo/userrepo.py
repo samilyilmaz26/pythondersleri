@@ -28,22 +28,11 @@ def logout():
     return redirect(url_for("index"))
 
 @opendb
-def kayitol (con, username, password):
+def kayitol(con, username, password, email):
     cursor = con.cursor()
-    cmd = "insert into user (username, password) values (?,?)"
-    cursor.execute(cmd, (username, password))
+    cmd = "insert into user (username, password, email) values (?,?,?)"
+    cursor.execute(cmd, (username, password, email))
     con.commit()
-
-@opendb
-def verifypassword(con, username, password):
-    cursor = con.cursor()
-    cmd = "select * from user where username = ?"
-    result = cursor.execute(cmd, (username,)).fetchone()
-    if result:
-        stored_password = result["password"]
-        return stored_password == password
-    else:
-        return False
 
 def login_required(f):
     @wraps(f)

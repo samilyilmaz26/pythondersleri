@@ -8,11 +8,12 @@ def liste(con):
     bolumler = [dict(row) for row in bolum_tuple]
     return bolumler
 @opendb
-def ekle(con, bolumad):
+def bolum_ekle(con, bolumad):
     cursor = con.cursor()
     cmd = "insert into bolum (bolumad) values (?)"
     cursor.execute(cmd, (bolumad,))
     con.commit()
+
 @opendb
 def sil(con, id):
     cursor = con.cursor()
@@ -30,10 +31,8 @@ def  bul(con, id):
         return None
 
 @opendb
-def guncelle(con, id, bolumad):
+def bolum_guncelle(con, id, bolumad):
     cursor = con.cursor()
     cmd = "update bolum set bolumad = ? where id = ?"
     cursor.execute(cmd, (bolumad, id))
     con.commit()
-
- 
