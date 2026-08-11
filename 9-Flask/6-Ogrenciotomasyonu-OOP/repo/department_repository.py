@@ -11,11 +11,11 @@ class DepartmentRepository(BaseRepository):
             rows = cursor.execute("select * from Bolum").fetchall()
             return [Department.from_row(row) for row in rows]
 
-    def add(self, bolumad):
+    def add(self, department: Department) -> None:
         with self.db as con:
             cursor = con.cursor()
             cmd = "insert into Bolum (bolumad) values (?)"
-            cursor.execute(cmd, (bolumad,))
+            cursor.execute(cmd, (department.bolumad,))
 
     def delete(self, id):
         with self.db as con:
@@ -30,8 +30,8 @@ class DepartmentRepository(BaseRepository):
             ).fetchone()
             return Department.from_row(row)
 
-    def update(self, id, bolumad):
+    def update(self, department: Department) -> None:
         with self.db as con:
             cursor = con.cursor()
             cmd = "update Bolum set bolumad = ? where id = ?"
-            cursor.execute(cmd, (bolumad, id))
+            cursor.execute(cmd, (department.bolumad, department.id))

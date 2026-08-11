@@ -15,11 +15,11 @@ class StudentRepository(BaseRepository):
             rows = cursor.execute(cmd).fetchall()
             return [Student.from_row(row) for row in rows]
 
-    def add(self, ad, soyad, bolumid):
+    def add(self, student: Student) -> None:
         with self.db as con:
             cursor = con.cursor()
             cmd = "insert into Ogrenci (ad, soyad, bolumid) values (?, ?, ?)"
-            cursor.execute(cmd, (ad, soyad, bolumid))
+            cursor.execute(cmd, (student.ad, student.soyad, student.bolumid))
 
     def delete(self, id):
         with self.db as con:
@@ -34,8 +34,10 @@ class StudentRepository(BaseRepository):
             ).fetchone()
             return Student.from_row(row)
 
-    def update(self, id, ad, soyad, bolumid):
+    def update(self, student: Student) -> None:
         with self.db as con:
             cursor = con.cursor()
             cmd = "update Ogrenci set ad = ?, soyad = ?, bolumid = ? where id = ?"
-            cursor.execute(cmd, (ad, soyad, bolumid, id))
+            cursor.execute(
+                cmd, (student.ad, student.soyad, student.bolumid, student.id)
+            )

@@ -111,10 +111,12 @@ class OgrenciOtomasyonApp:
 
     def ogrenci_ekle(self):
         if request.method == "POST":
-            ad = request.form.get("ad")
-            soyad = request.form.get("soyad")
-            bolumid = request.form.get("bolumid")
-            self.student_repo.add(ad, soyad, bolumid)
+            student = Student(
+                ad=request.form.get("ad"),
+                soyad=request.form.get("soyad"),
+                bolumid=request.form.get("bolumid"),
+            )
+            self.student_repo.add(student)
             flash("Öğrenci Ekleme Başarılı", "success")
             return redirect(url_for("ogrenciler"))
         bolumler: list[Department] = self.department_repo.list_all()
@@ -129,10 +131,13 @@ class OgrenciOtomasyonApp:
         ogrenci: Student = self.student_repo.find(id)
 
         if request.method == "POST":
-            ad = request.form.get("ad")
-            soyad = request.form.get("soyad")
-            bolumid = request.form.get("bolumid")
-            self.student_repo.update(id, ad, soyad, bolumid)
+            student = Student(
+                id=id,
+                ad=request.form.get("ad"),
+                soyad=request.form.get("soyad"),
+                bolumid=request.form.get("bolumid"),
+            )
+            self.student_repo.update(student)
             flash("Öğrenci Güncelleme Başarılı", "success")
             return redirect(url_for("ogrenciler"))
 
@@ -193,8 +198,8 @@ class OgrenciOtomasyonApp:
 
     def bolum_ekle(self):
         if request.method == "POST":
-            bolumad = request.form.get("bolumad")
-            self.department_repo.add(bolumad)
+            department = Department(bolumad=request.form.get("bolumad"))
+            self.department_repo.add(department)
             flash("Bölüm Ekleme Başarılı", "success")
             return redirect(url_for("bolumler"))
         return render_template("bolumekle.html")
@@ -202,8 +207,8 @@ class OgrenciOtomasyonApp:
     def bolum_guncelle(self, id):
         bolum: Department = self.department_repo.find(id)
         if request.method == "POST":
-            bolumad = request.form.get("bolumad")
-            self.department_repo.update(id, bolumad)
+            department = Department(id=id, bolumad=request.form.get("bolumad"))
+            self.department_repo.update(department)
             flash("Bölüm Güncelleme Başarılı", "success")
             return redirect(url_for("bolumler"))
         return render_template("bolumguncelle.html", bolum=bolum)
