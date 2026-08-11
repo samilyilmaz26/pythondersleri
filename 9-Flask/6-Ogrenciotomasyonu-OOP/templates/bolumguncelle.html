@@ -3,6 +3,7 @@
 {% set department = bolum %}
 <h3>Bölüm Güncelle</h3>
 <hr>
+    
     <form action="{{ url_for('bolum_guncelle', id=department.id) }}" method="post">
         <div class="col-md-5">
             <label for="bolumad" class="form-label">Bölüm Adı</label>

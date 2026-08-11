@@ -111,11 +111,7 @@ class OgrenciOtomasyonApp:
 
     def ogrenci_ekle(self):
         if request.method == "POST":
-            student = Student(
-                ad=request.form.get("ad"),
-                soyad=request.form.get("soyad"),
-                bolumid=request.form.get("bolumid"),
-            )
+            student = Student.from_form(request.form)
             self.student_repo.add(student)
             flash("Öğrenci Ekleme Başarılı", "success")
             return redirect(url_for("ogrenciler"))
@@ -131,12 +127,7 @@ class OgrenciOtomasyonApp:
         ogrenci: Student = self.student_repo.find(id)
 
         if request.method == "POST":
-            student = Student(
-                id=id,
-                ad=request.form.get("ad"),
-                soyad=request.form.get("soyad"),
-                bolumid=request.form.get("bolumid"),
-            )
+            student = Student.from_form(request.form, id=id)
             self.student_repo.update(student)
             flash("Öğrenci Güncelleme Başarılı", "success")
             return redirect(url_for("ogrenciler"))

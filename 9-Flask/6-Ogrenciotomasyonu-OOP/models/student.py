@@ -15,4 +15,13 @@ class Student(BaseModel):
 
     @property
     def full_name(self):
-        return f"{self.ad} {self.soyad}".strip()
+        return f"{self.ad} {self.soyad}"
+
+    @classmethod
+    def from_form(cls, form, id=None):
+        return cls(
+            id=id,
+            ad=form.get("ad"),
+            soyad=form.get("soyad"),
+            bolumid=form.get("bolumid"),
+        )

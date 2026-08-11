@@ -3,7 +3,8 @@
 {% set student = ogrenci %}
 <h3>Öğrenci Güncelle</h3>
 <hr>
-    <form action="{{ url_for('ogrenci_guncelle', id=student.id) }}" method="post">
+<H2>{{student.full_name}}</H2>
+    <form   method="post">
         <div class="col-md-5">
             <label for="ad" class="form-label">Adı</label>
             <input type="text" class="form-control" id="ad" name="ad" required  value="{{ student.ad }}">
