@@ -13,8 +13,8 @@
             <label for="bolumid" class="form-label">Bölüm</label>
              <select class="form-control" id="bolumid" name="bolumid" required>
                 <option value="">Bölüm Seçin</option>
-                {% for bolum in bolumler %}
-                    <option value="{{ bolum.id }}">{{ bolum.bolumad }}</option>
+                {% for department in bolumler %}
+                    <option value="{{ department.id }}">{{ department.bolumad }}</option>
                 {% endfor %}
             </select>
 

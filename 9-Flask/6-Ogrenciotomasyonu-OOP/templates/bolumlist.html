@@ -12,16 +12,16 @@
         </tr>
     </thead>
     <tbody>
-        {% for bolum in bolumler %}
-            
+        {% for department in bolumler %}
+
         <tr>
 
-                <td>{{bolum.id}}</td>
-                <td>{{bolum.bolumad}}</td>
-                <td><a class="btn btn-success"  href="/bolum/guncelle/{{ bolum.id }}">Güncelle</a></td>
-                <td><a class="btn btn-danger"  href="/bolum/sil/{{ bolum.id }}">Sil</a></td>
+                <td>{{department.id}}</td>
+                <td>{{department.bolumad}}</td>
+                <td><a class="btn btn-success"  href="/bolum/guncelle/{{ department.id }}">Güncelle</a></td>
+                <td><a class="btn btn-danger"  href="/bolum/sil/{{ department.id }}">Sil</a></td>
             </tr>
-            
+
         {% endfor %}
    </tbody>
 </table>
