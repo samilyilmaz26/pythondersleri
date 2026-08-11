@@ -1,0 +1,24 @@
+{% extends 'copy/layout.html' %}
+{% block page %}
+<h3>Öğrenci Ekle</h3>
+<hr>
+    <form action="{{ url_for('ogrenci_ekle') }}" method="post">
+        <div class="col-md-5">
+            <label for="ad" class="form-label">Ad</label>
+            <input type="text" class="form-control" id="ad" name="ad" required>
+            
+            <label for="soyad" class="form-label">Soyad</label>
+            <input type="text" class="form-control" id="soyad" name="soyad" required>
+
+            <label for="bolumid" class="form-label">Bölüm</label>
+             <select class="form-control" id="bolumid" name="bolumid" required>
+                <option value="">Bölüm Seçin</option>
+                {% for bolum in bolumler %}
+                    <option value="{{ bolum.id }}">{{ bolum.bolumad }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn btn-primary">Ekle</button>
+        </div>
+    </form>
+{% endblock %}
