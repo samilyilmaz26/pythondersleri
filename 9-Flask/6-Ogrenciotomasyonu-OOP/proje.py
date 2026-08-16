@@ -107,7 +107,7 @@ class OgrenciOtomasyonApp:
     # ------------------------------------------------------------------
     def students(self):
         ogrenciler: list[Student] = self.student_repo.list_all()
-        return render_template("student_list.html", ogrenciler=ogrenciler)
+        return render_template("students/student_list.html", ogrenciler=ogrenciler)
 
     def add_student(self):
         if request.method == "POST":
@@ -116,7 +116,7 @@ class OgrenciOtomasyonApp:
             flash("Öğrenci Ekleme Başarılı", "success")
             return redirect(url_for("students"))
         bolumler: list[Department] = self.department_repo.list_all()
-        return render_template("add_student.html", bolumler=bolumler)
+        return render_template("students/add_student.html", bolumler=bolumler)
 
     def delete_student(self, id):
         self.student_repo.delete(id)
@@ -135,7 +135,7 @@ class OgrenciOtomasyonApp:
 
         bolumler: list[Department] = self.department_repo.list_all()
         return render_template(
-            "update_student.html", ogrenci=ogrenci, bolumler=bolumler
+            "students/update_student.html", ogrenci=ogrenci, bolumler=bolumler
         )
 
     # ------------------------------------------------------------------
@@ -147,14 +147,14 @@ class OgrenciOtomasyonApp:
             password_entered = request.form.get("password")
             if not username or not password_entered:
                 flash("Tüm alanları doldurun", "danger")
-                return render_template("login.html")
+                return render_template("logins/login.html")
 
             if self.auth.attempt_login(username, password_entered):
                 flash("Login Başarılı ...", "success")
                 return redirect(url_for("index"))
 
             flash("Yanlış kullanıcı adı veya şifre", "danger")
-        return render_template("login.html")
+        return render_template("logins/login.html")
 
     def logout(self):
         self.auth.logout()
@@ -171,22 +171,22 @@ class OgrenciOtomasyonApp:
 
             if not username or not email or not password or not confirm or not accept_tos:
                 flash("Tüm Alanlar Doldurulmalı ", "danger")
-                return render_template("register.html")
+                return render_template("registers/register.html")
             elif password != confirm:
                 flash("Şifreler uyuşmuyor", "danger")
-                return render_template("register.html")
+                return render_template("registers/register.html")
 
             self.auth.register(username, email, password)
             flash("Sisteme üye kaydı başarılı ", "success")
             return redirect(url_for("index"))
-        return render_template("register.html")
+        return render_template("registers/register.html")
 
     # ------------------------------------------------------------------
     # Departments (Bolum)
     # ------------------------------------------------------------------
     def departments(self):
         bolumler: list[Department] = self.department_repo.list_all()
-        return render_template("department_list.html", bolumler=bolumler)
+        return render_template("departments/department_list.html", bolumler=bolumler)
 
     def add_department(self):
         if request.method == "POST":
@@ -194,7 +194,7 @@ class OgrenciOtomasyonApp:
             self.department_repo.add(department)
             flash("Bölüm Ekleme Başarılı", "success")
             return redirect(url_for("departments"))
-        return render_template("add_department.html")
+        return render_template("departments/add_department.html")
 
     def update_department(self, id):
         bolum: Department = self.department_repo.find(id)
@@ -203,7 +203,7 @@ class OgrenciOtomasyonApp:
             self.department_repo.update(department)
             flash("Bölüm Güncelleme Başarılı", "success")
             return redirect(url_for("departments"))
-        return render_template("update_department.html", bolum=bolum)
+        return render_template("departments/update_department.html", bolum=bolum)
 
     def delete_department(self, id):
         self.department_repo.delete(id)
