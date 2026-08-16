@@ -147,14 +147,14 @@ class OgrenciOtomasyonApp:
             password_entered = request.form.get("password")
             if not username or not password_entered:
                 flash("Tüm alanları doldurun", "danger")
-                return render_template("logins/login.html")
+                return render_template("auth/login.html")
 
             if self.auth.attempt_login(username, password_entered):
                 flash("Login Başarılı ...", "success")
                 return redirect(url_for("index"))
 
             flash("Yanlış kullanıcı adı veya şifre", "danger")
-        return render_template("logins/login.html")
+        return render_template("auth/login.html")
 
     def logout(self):
         self.auth.logout()
@@ -171,15 +171,15 @@ class OgrenciOtomasyonApp:
 
             if not username or not email or not password or not confirm or not accept_tos:
                 flash("Tüm Alanlar Doldurulmalı ", "danger")
-                return render_template("registers/register.html")
+                return render_template("auth/register.html")
             elif password != confirm:
                 flash("Şifreler uyuşmuyor", "danger")
-                return render_template("registers/register.html")
+                return render_template("auth/register.html")
 
             self.auth.register(username, email, password)
             flash("Sisteme üye kaydı başarılı ", "success")
             return redirect(url_for("index"))
-        return render_template("registers/register.html")
+        return render_template("auth/register.html")
 
     # ------------------------------------------------------------------
     # Departments (Bolum)
