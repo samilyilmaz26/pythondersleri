@@ -39,24 +39,24 @@ class OgrenciOtomasyonApp:
         app.add_url_rule("/", "index", self.index)
         app.add_url_rule("/about", "about", self.about)
         app.add_url_rule("/contact", "contact", self.contact)
-        app.add_url_rule("/degiskenler", "degiskenler", self.degiskenler)
+        app.add_url_rule("/degiskenler", "variables", self.variables)
 
         app.add_url_rule(
-            "/ogrenciler", "ogrenciler", login_required(self.ogrenciler)
+            "/ogrenciler", "students", login_required(self.students)
         )
         app.add_url_rule(
             "/ogrenci/ekle",
-            "ogrenci_ekle",
-            login_required(self.ogrenci_ekle),
+            "add_student",
+            login_required(self.add_student),
             methods=["GET", "POST"],
         )
         app.add_url_rule(
-            "/ogrenci/sil/<int:id>", "ogrenci_sil", login_required(self.ogrenci_sil)
+            "/ogrenci/sil/<int:id>", "delete_student", login_required(self.delete_student)
         )
         app.add_url_rule(
             "/ogrenci/guncelle/<int:id>",
-            "ogrenci_guncelle",
-            login_required(self.ogrenci_guncelle),
+            "update_student",
+            login_required(self.update_student),
             methods=["GET", "POST"],
         )
 
@@ -68,21 +68,21 @@ class OgrenciOtomasyonApp:
             "/register", "register", self.register, methods=["GET", "POST"]
         )
 
-        app.add_url_rule("/bolumler", "bolumler", login_required(self.bolumler))
+        app.add_url_rule("/bolumler", "departments", login_required(self.departments))
         app.add_url_rule(
             "/bolum/ekle",
-            "bolum_ekle",
-            login_required(self.bolum_ekle),
+            "add_department",
+            login_required(self.add_department),
             methods=["GET", "POST"],
         )
         app.add_url_rule(
             "/bolum/guncelle/<int:id>",
-            "bolum_guncelle",
-            login_required(self.bolum_guncelle),
+            "update_department",
+            login_required(self.update_department),
             methods=["GET", "POST"],
         )
         app.add_url_rule(
-            "/bolum/sil/<int:id>", "bolum_sil", login_required(self.bolum_sil)
+            "/bolum/sil/<int:id>", "delete_department", login_required(self.delete_department)
         )
 
     # ------------------------------------------------------------------
@@ -97,44 +97,45 @@ class OgrenciOtomasyonApp:
     def contact(self):
         return render_template("contact.html")
 
-    def degiskenler(self):
+    def variables(self):
         return render_template(
-            "degiskenler.html", **self.demo_data.as_template_context()
+            "variables.html", **self.demo_data.as_template_context()
         )
 
     # ------------------------------------------------------------------
     # Students (Ogrenci)
     # ------------------------------------------------------------------
-    def ogrenciler(self):
+    def students(self):
         ogrenciler: list[Student] = self.student_repo.list_all()
-        return render_template("ogrencilist.html", ogrenciler=ogrenciler)
+        return render_template("student_list.html", ogrenciler=ogrenciler)
 
-    def ogrenci_ekle(self):
+    def add_student(self):
         if request.method == "POST":
             student = Student.from_form(request.form)
             self.student_repo.add(student)
             flash("Öğrenci Ekleme Başarılı", "success")
-            return redirect(url_for("ogrenciler"))
+            return redirect(url_for("students"))
         bolumler: list[Department] = self.department_repo.list_all()
-        return render_template("ogrenciekle.html", bolumler=bolumler)
+        return render_template("add_student.html", bolumler=bolumler)
 
-    def ogrenci_sil(self, id):
+    def delete_student(self, id):
         self.student_repo.delete(id)
         flash("Öğrenci Silme Başarılı", "success")
-        return redirect(url_for("ogrenciler"))
+        return redirect(url_for("students"))
 
-    def ogrenci_guncelle(self, id):
+    def update_student(self, id):
         ogrenci: Student = self.student_repo.find(id)
 
         if request.method == "POST":
             student = Student.from_form(request.form, id=id)
             self.student_repo.update(student)
             flash("Öğrenci Güncelleme Başarılı", "success")
-            return redirect(url_for("ogrenciler"))
+            return redirect(url_for("students"))
+
 
         bolumler: list[Department] = self.department_repo.list_all()
         return render_template(
-            "ogrenciguncelle.html", ogrenci=ogrenci, bolumler=bolumler
+            "update_student.html", ogrenci=ogrenci, bolumler=bolumler
         )
 
     # ------------------------------------------------------------------
@@ -146,14 +147,14 @@ class OgrenciOtomasyonApp:
             password_entered = request.form.get("password")
             if not username or not password_entered:
                 flash("Tüm alanları doldurun", "danger")
-                return render_template("giris.html")
+                return render_template("login.html")
 
             if self.auth.attempt_login(username, password_entered):
                 flash("Login Başarılı ...", "success")
                 return redirect(url_for("index"))
 
             flash("Yanlış kullanıcı adı veya şifre", "danger")
-        return render_template("giris.html")
+        return render_template("login.html")
 
     def logout(self):
         self.auth.logout()
@@ -170,44 +171,44 @@ class OgrenciOtomasyonApp:
 
             if not username or not email or not password or not confirm or not accept_tos:
                 flash("Tüm Alanlar Doldurulmalı ", "danger")
-                return render_template("kayit.html")
+                return render_template("register.html")
             elif password != confirm:
                 flash("Şifreler uyuşmuyor", "danger")
-                return render_template("kayit.html")
+                return render_template("register.html")
 
             self.auth.register(username, email, password)
             flash("Sisteme üye kaydı başarılı ", "success")
             return redirect(url_for("index"))
-        return render_template("kayit.html")
+        return render_template("register.html")
 
     # ------------------------------------------------------------------
     # Departments (Bolum)
     # ------------------------------------------------------------------
-    def bolumler(self):
+    def departments(self):
         bolumler: list[Department] = self.department_repo.list_all()
-        return render_template("bolumlist.html", bolumler=bolumler)
+        return render_template("department_list.html", bolumler=bolumler)
 
-    def bolum_ekle(self):
+    def add_department(self):
         if request.method == "POST":
             department = Department(bolumad=request.form.get("bolumad"))
             self.department_repo.add(department)
             flash("Bölüm Ekleme Başarılı", "success")
-            return redirect(url_for("bolumler"))
-        return render_template("bolumekle.html")
+            return redirect(url_for("departments"))
+        return render_template("add_department.html")
 
-    def bolum_guncelle(self, id):
+    def update_department(self, id):
         bolum: Department = self.department_repo.find(id)
         if request.method == "POST":
             department = Department(id=id, bolumad=request.form.get("bolumad"))
             self.department_repo.update(department)
             flash("Bölüm Güncelleme Başarılı", "success")
-            return redirect(url_for("bolumler"))
-        return render_template("bolumguncelle.html", bolum=bolum)
+            return redirect(url_for("departments"))
+        return render_template("update_department.html", bolum=bolum)
 
-    def bolum_sil(self, id):
+    def delete_department(self, id):
         self.department_repo.delete(id)
         flash("Bölüm Silme Başarılı", "success")
-        return redirect(url_for("bolumler"))
+        return redirect(url_for("departments"))
 
     # ------------------------------------------------------------------
     def run(self, debug=True):

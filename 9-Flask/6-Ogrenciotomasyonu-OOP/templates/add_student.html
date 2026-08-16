@@ -2,7 +2,7 @@
 {% block page %}
 <h3>Öğrenci Ekle</h3>
 <hr>
-    <form action="{{ url_for('ogrenci_ekle') }}" method="post">
+    <form action="{{ url_for('add_student') }}" method="post">
         <div class="col-md-5">
             <label for="ad" class="form-label">Ad</label>
             <input type="text" class="form-control" id="ad" name="ad" required>

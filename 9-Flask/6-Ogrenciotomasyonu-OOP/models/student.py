@@ -1,6 +1,5 @@
 from models.base_model import BaseModel
 
-
 class Student(BaseModel):
     """Represents a row of the Ogrenci table (a student)."""
 
