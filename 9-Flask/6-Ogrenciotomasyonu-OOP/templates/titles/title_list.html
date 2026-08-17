@@ -1,0 +1,28 @@
+{% extends 'copy/layout.html' %}
+{% block page %}
+    <h3>Unvanlar </h3>
+    <a class="btn btn-primary" href="{{ url_for('add_title') }}">Unvan Ekle</a>
+    <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id </th>
+            <th>Unvan Adı</th>
+            <th>Güncelle</th>
+            <th>Sil</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for unvan in unvanlar %}
+
+        <tr>
+
+                <td>{{unvan.id}}</td>
+                <td>{{unvan.unvanad}}</td>
+                <td><a class="btn btn-success"  href="{{ url_for('update_title', id=unvan.id) }}">Güncelle</a></td>
+                <td><a class="btn btn-danger"  href="{{ url_for('delete_title', id=unvan.id) }}">Sil</a></td>
+            </tr>
+
+        {% endfor %}
+   </tbody>
+</table>
+{% endblock %}

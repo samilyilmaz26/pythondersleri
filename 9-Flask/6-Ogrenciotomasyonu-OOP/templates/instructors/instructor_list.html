@@ -1,0 +1,28 @@
+{% extends 'copy/layout.html' %}
+{% block page %}
+<h3>Eğitmenler </h3>
+<hr>
+<a class="btn btn-primary" href="{{ url_for('add_instructor') }}">Eğitmen Ekle</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Ad Soyad</th>
+            <th scope="col">Unvan</th>
+            <th scope="col">Bölüm</th>
+            <th scope="col">Adres</th>
+            <th scope="col">İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for instructor in egitmenler %}
+        <tr>
+            <td>{{ instructor.full_name }}</td>
+            <td>{{ instructor.unvanad }}</td>
+            <td>{{ instructor.bolumad }}</td>
+            <td>{{ instructor.full_address }}</td>
+            <td><a href="{{ url_for('update_instructor', id=instructor.id) }}" class="btn btn-primary btn-sm">Güncelle</a>
+            <td> <a href="{{ url_for('delete_instructor', id=instructor.id) }}" class="btn btn-danger btn-sm">Sil</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    {% endblock %}

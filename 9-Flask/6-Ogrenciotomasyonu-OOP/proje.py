@@ -1,10 +1,18 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
 
-from repo import StudentRepository, DepartmentRepository, UserRepository
+from repo import (
+    StudentRepository,
+    DepartmentRepository,
+    UserRepository,
+    InstructorRepository,
+    UnvanRepository,
+)
 from services import AuthService
 from modules import DemoData
 from models.student import Student
 from models.department import Department
+from models.instructor import Instructor
+from models.unvan import Unvan
 
 
 class OgrenciOtomasyonApp:
@@ -24,6 +32,8 @@ class OgrenciOtomasyonApp:
         self.student_repo = StudentRepository(db_path)
         self.department_repo = DepartmentRepository(db_path)
         self.user_repo = UserRepository(db_path)
+        self.instructor_repo = InstructorRepository(db_path)
+        self.unvan_repo = UnvanRepository(db_path)
         self.auth = AuthService(self.user_repo)
         self.demo_data = DemoData()
 
@@ -83,6 +93,42 @@ class OgrenciOtomasyonApp:
         )
         app.add_url_rule(
             "/departments/delete/<int:id>", "delete_department", login_required(self.delete_department)
+        )
+
+        app.add_url_rule(
+            "/instructors", "instructors", login_required(self.instructors)
+        )
+        app.add_url_rule(
+            "/instructors/add",
+            "add_instructor",
+            login_required(self.add_instructor),
+            methods=["GET", "POST"],
+        )
+        app.add_url_rule(
+            "/instructors/delete/<int:id>", "delete_instructor", login_required(self.delete_instructor)
+        )
+        app.add_url_rule(
+            "/instructors/update/<int:id>",
+            "update_instructor",
+            login_required(self.update_instructor),
+            methods=["GET", "POST"],
+        )
+
+        app.add_url_rule("/titles", "titles", login_required(self.titles))
+        app.add_url_rule(
+            "/titles/add",
+            "add_title",
+            login_required(self.add_title),
+            methods=["GET", "POST"],
+        )
+        app.add_url_rule(
+            "/titles/update/<int:id>",
+            "update_title",
+            login_required(self.update_title),
+            methods=["GET", "POST"],
+        )
+        app.add_url_rule(
+            "/titles/delete/<int:id>", "delete_title", login_required(self.delete_title)
         )
 
     # ------------------------------------------------------------------
@@ -209,6 +255,77 @@ class OgrenciOtomasyonApp:
         self.department_repo.delete(id)
         flash("Bölüm Silme Başarılı", "success")
         return redirect(url_for("departments"))
+
+    # ------------------------------------------------------------------
+    # Instructors (Egitmen)
+    # ------------------------------------------------------------------
+    def instructors(self):
+        egitmenler: list[Instructor] = self.instructor_repo.list_all()
+        return render_template("instructors/instructor_list.html", egitmenler=egitmenler)
+
+    def add_instructor(self):
+        if request.method == "POST":
+            instructor = Instructor.from_form(request.form)
+            self.instructor_repo.add(instructor)
+            flash("Eğitmen Ekleme Başarılı", "success")
+            return redirect(url_for("instructors"))
+        bolumler: list[Department] = self.department_repo.list_all()
+        unvanlar: list[Unvan] = self.unvan_repo.list_all()
+        return render_template(
+            "instructors/add_instructor.html", bolumler=bolumler, unvanlar=unvanlar
+        )
+
+    def delete_instructor(self, id):
+        self.instructor_repo.delete(id)
+        flash("Eğitmen Silme Başarılı", "success")
+        return redirect(url_for("instructors"))
+
+    def update_instructor(self, id):
+        egitmen: Instructor = self.instructor_repo.find(id)
+
+        if request.method == "POST":
+            instructor = Instructor.from_form(request.form, id=id)
+            self.instructor_repo.update(instructor)
+            flash("Eğitmen Güncelleme Başarılı", "success")
+            return redirect(url_for("instructors"))
+
+        bolumler: list[Department] = self.department_repo.list_all()
+        unvanlar: list[Unvan] = self.unvan_repo.list_all()
+        return render_template(
+            "instructors/update_instructor.html",
+            egitmen=egitmen,
+            bolumler=bolumler,
+            unvanlar=unvanlar,
+        )
+
+    # ------------------------------------------------------------------
+    # Titles (Unvan)
+    # ------------------------------------------------------------------
+    def titles(self):
+        unvanlar: list[Unvan] = self.unvan_repo.list_all()
+        return render_template("titles/title_list.html", unvanlar=unvanlar)
+
+    def add_title(self):
+        if request.method == "POST":
+            unvan = Unvan(unvanad=request.form.get("unvanad"))
+            self.unvan_repo.add(unvan)
+            flash("Unvan Ekleme Başarılı", "success")
+            return redirect(url_for("titles"))
+        return render_template("titles/add_title.html")
+
+    def update_title(self, id):
+        unvan: Unvan = self.unvan_repo.find(id)
+        if request.method == "POST":
+            unvan = Unvan(id=id, unvanad=request.form.get("unvanad"))
+            self.unvan_repo.update(unvan)
+            flash("Unvan Güncelleme Başarılı", "success")
+            return redirect(url_for("titles"))
+        return render_template("titles/update_title.html", unvan=unvan)
+
+    def delete_title(self, id):
+        self.unvan_repo.delete(id)
+        flash("Unvan Silme Başarılı", "success")
+        return redirect(url_for("titles"))
 
     # ------------------------------------------------------------------
     def run(self, debug=True):

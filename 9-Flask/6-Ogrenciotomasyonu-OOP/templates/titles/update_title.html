@@ -1,0 +1,14 @@
+{% extends 'copy/layout.html' %}
+{% block page %}
+<h3>Unvan Güncelle</h3>
+<hr>
+
+    <form action="{{ url_for('update_title', id=unvan.id) }}" method="post">
+        <div class="col-md-5">
+            <label for="unvanad" class="form-label">Unvan Adı</label>
+            <input type="text" class="form-control" id="unvanad" name="unvanad" required  value="{{ unvan.unvanad }}">
+
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+        </div>
+    </form>
+{% endblock %}
