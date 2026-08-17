@@ -2,7 +2,7 @@
 {% block page %}
 <h3>Bölüm Ekle</h3>
 <hr>
-    <form action="/bolum/ekle" method="post">
+    <form action="{{ url_for('add_department') }}" method="post">
         <div class="col-md-5">
             <label for="bolumad" class="form-label">Bölüm Adı</label>
             <input type="text" class="form-control" id="bolumad" name="bolumad" required> 

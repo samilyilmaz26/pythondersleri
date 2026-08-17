@@ -39,22 +39,22 @@ class OgrenciOtomasyonApp:
         app.add_url_rule("/", "index", self.index)
         app.add_url_rule("/about", "about", self.about)
         app.add_url_rule("/contact", "contact", self.contact)
-        app.add_url_rule("/degiskenler", "variables", self.variables)
+        app.add_url_rule("/variables", "variables", self.variables)
 
         app.add_url_rule(
-            "/ogrenciler", "students", login_required(self.students)
+            "/students", "students", login_required(self.students)
         )
         app.add_url_rule(
-            "/ogrenci/ekle",
+            "/students/add",
             "add_student",
             login_required(self.add_student),
             methods=["GET", "POST"],
         )
         app.add_url_rule(
-            "/ogrenci/sil/<int:id>", "delete_student", login_required(self.delete_student)
+            "/students/delete/<int:id>", "delete_student", login_required(self.delete_student)
         )
         app.add_url_rule(
-            "/ogrenci/guncelle/<int:id>",
+            "/students/update/<int:id>",
             "update_student",
             login_required(self.update_student),
             methods=["GET", "POST"],
@@ -68,21 +68,21 @@ class OgrenciOtomasyonApp:
             "/register", "register", self.register, methods=["GET", "POST"]
         )
 
-        app.add_url_rule("/bolumler", "departments", login_required(self.departments))
+        app.add_url_rule("/departments", "departments", login_required(self.departments))
         app.add_url_rule(
-            "/bolum/ekle",
+            "/departments/add",
             "add_department",
             login_required(self.add_department),
             methods=["GET", "POST"],
         )
         app.add_url_rule(
-            "/bolum/guncelle/<int:id>",
+            "/departments/update/<int:id>",
             "update_department",
             login_required(self.update_department),
             methods=["GET", "POST"],
         )
         app.add_url_rule(
-            "/bolum/sil/<int:id>", "delete_department", login_required(self.delete_department)
+            "/departments/delete/<int:id>", "delete_department", login_required(self.delete_department)
         )
 
     # ------------------------------------------------------------------

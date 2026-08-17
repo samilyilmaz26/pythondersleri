@@ -1,7 +1,7 @@
 {% extends 'copy/layout.html' %}
 {% block page %}
     <h3>Bölümler </h3>
-    <a class="btn btn-primary" href="/bolum/ekle">Bölüm Ekle</a>
+    <a class="btn btn-primary" href="{{ url_for('add_department') }}">Bölüm Ekle</a>
     <table class="table table-striped">
     <thead>
         <tr>
@@ -18,8 +18,8 @@
 
                 <td>{{department.id}}</td>
                 <td>{{department.bolumad}}</td>
-                <td><a class="btn btn-success"  href="/bolum/guncelle/{{ department.id }}">Güncelle</a></td>
-                <td><a class="btn btn-danger"  href="/bolum/sil/{{ department.id }}">Sil</a></td>
+                <td><a class="btn btn-success"  href="{{ url_for('update_department', id=department.id) }}">Güncelle</a></td>
+                <td><a class="btn btn-danger"  href="{{ url_for('delete_department', id=department.id) }}">Sil</a></td>
             </tr>
 
         {% endfor %}
