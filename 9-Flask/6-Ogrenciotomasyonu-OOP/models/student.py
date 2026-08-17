@@ -21,6 +21,11 @@ class Student(BaseModel):
     def full_name(self):
         return f"{self.ad} {self.soyad}"
 
+    @property
+    def full_address(self):
+        parts = [self.mahalle, self.cadde, self.kapino, self.city]
+        return " ".join(part for part in parts if part)
+
     @classmethod
     def from_form(cls, form, id=None):
         return cls(
