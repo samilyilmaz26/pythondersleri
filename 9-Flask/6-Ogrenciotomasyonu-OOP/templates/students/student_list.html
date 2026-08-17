@@ -2,12 +2,13 @@
 {% block page %}
 <h3>Öğrenciler </h3>
 <hr>
-<a class="btn btn-primary" href="/ogrenci/ekle">Öğrenci Ekle</a>
+<a class="btn btn-primary" href="{{ url_for('add_student') }}">Öğrenci Ekle</a>
 <table class="table table-striped">
     <thead>
         <tr>
             <th scope="col">Ad Soyad</th>
             <th scope="col">Bölüm</th>
+            <th scope="col">Adres</th>
             <th scope="col">İşlemler</th>
         </tr>
     </thead>
@@ -16,8 +17,9 @@
         <tr>
             <td>{{ student.full_name }}</td>
             <td>{{ student.bolumad }}</td>
-            <td><a href="/ogrenci/guncelle/{{ student.id }}" class="btn btn-primary btn-sm">Güncelle</a>
-            <td> <a href="/ogrenci/sil/{{ student.id }}" class="btn btn-danger btn-sm">Sil</a></td>
+            <td>{{ student.mahalle }} {{ student.cadde }} {{ student.kapino }} {{ student.city }}</td>
+            <td><a href="{{ url_for('update_student', id=student.id) }}" class="btn btn-primary btn-sm">Güncelle</a>
+            <td> <a href="{{ url_for('delete_student', id=student.id) }}" class="btn btn-danger btn-sm">Sil</a></td>
         </tr>
         {% endfor %}
     </tbody>
