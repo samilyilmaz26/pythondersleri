@@ -1,33 +1,25 @@
-from models.base_model import BaseModel
+from models.student import Student
 
 
-class Instructor(BaseModel):
-    """Represents a row of the Egitmen table (an instructor)."""
+class Instructor(Student):
+    """Represents a row of the Egitmen table (an instructor).
+
+    An instructor is a student plus a title (unvan), so it reuses
+    Student's name/department/address fields and full_name/full_address
+    properties instead of redefining them.
+    """
 
     def __init__(self, id=None, ad="", soyad="", bolumid=None, bolumad=None,
-                 unvanid=None, unvanad=None, mahalle="", cadde="", kapino="", city=""):
-        self.id = id
-        self.ad = ad
-        self.soyad = soyad
-        self.bolumid = bolumid
-        # bolumad/unvanad are only present when the instructor was loaded
-        # together with its department/title via a join query.
-        self.bolumad = bolumad
+                 mahalle="", cadde="", kapino="", city="",
+                 unvanid=None, unvanad=None):
+        super().__init__(
+            id=id, ad=ad, soyad=soyad, bolumid=bolumid, bolumad=bolumad,
+            mahalle=mahalle, cadde=cadde, kapino=kapino, city=city,
+        )
+        # unvanad (title name) is only present when the instructor was
+        # loaded together with its title via a join query.
         self.unvanid = unvanid
         self.unvanad = unvanad
-        self.mahalle = mahalle
-        self.cadde = cadde
-        self.kapino = kapino
-        self.city = city
-
-    @property
-    def full_name(self):
-        return f"{self.ad} {self.soyad}"
-
-    @property
-    def full_address(self):
-        parts = [self.mahalle, self.cadde, self.kapino, self.city]
-        return " ".join(part for part in parts if part)
 
     @classmethod
     def from_form(cls, form, id=None):
@@ -36,9 +28,9 @@ class Instructor(BaseModel):
             ad=form.get("ad"),
             soyad=form.get("soyad"),
             bolumid=form.get("bolumid"),
-            unvanid=form.get("unvanid"),
             mahalle=form.get("mahalle"),
             cadde=form.get("cadde"),
             kapino=form.get("kapino"),
             city=form.get("city"),
+            unvanid=form.get("unvanid"),
         )
