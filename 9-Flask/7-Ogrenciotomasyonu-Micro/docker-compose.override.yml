@@ -1,0 +1,44 @@
+# Sadece geliştirme ortamı için: `docker compose up` bu dosyayı otomatik
+# olarak docker-compose.yml ile birleştirir. Servis kodunu konteynere canlı
+# mount eder ve Flask debug/reloader'ı açar, böylece kod değişikliklerinde
+# konteynerleri yeniden build etmek gerekmez.
+#
+# Bu dosyayı devre dışı bırakıp saf üretim ayarlarıyla çalıştırmak için:
+#   docker compose -f docker-compose.yml up --build -d
+
+services:
+  auth-service:
+    environment:
+      FLASK_DEBUG: 1
+    volumes:
+      - ./services/auth-service:/app
+
+  department-service:
+    environment:
+      FLASK_DEBUG: 1
+    volumes:
+      - ./services/department-service:/app
+
+  title-service:
+    environment:
+      FLASK_DEBUG: 1
+    volumes:
+      - ./services/title-service:/app
+
+  student-service:
+    environment:
+      FLASK_DEBUG: 1
+    volumes:
+      - ./services/student-service:/app
+
+  instructor-service:
+    environment:
+      FLASK_DEBUG: 1
+    volumes:
+      - ./services/instructor-service:/app
+
+  web-gateway:
+    environment:
+      FLASK_DEBUG: 1
+    volumes:
+      - ./web-gateway:/app

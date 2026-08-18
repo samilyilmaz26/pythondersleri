@@ -1,0 +1,104 @@
+DOCKER DESKTOP KURULUMU (Windows 10 Pro)
+=========================================
+
+Bu makine Windows 10 Pro 10.0.19045. Docker Desktop bu sürümde WSL2
+(Windows Subsystem for Linux) altyapısını kullanır. Aşağıdaki adımları
+sırayla takip et.
+
+
+1) ÖN KOŞUL: WSL2'yi ETKİNLEŞTİR
+--------------------------------
+PowerShell'i YÖNETİCİ olarak aç (Başlat menüsünde "PowerShell" yaz,
+sağ tık > "Yönetici olarak çalıştır") ve şu komutu çalıştır:
+
+    wsl --install
+
+Bu komut WSL2'yi ve varsayılan bir Linux dağıtımını (Ubuntu) kurar.
+Komut bittikten sonra bilgisayarı YENİDEN BAŞLAT.
+
+Eğer "wsl --install" komutu tanınmıyorsa (eski Windows sürümü ihtimaline
+karşı) şu iki özelliği manuel aç:
+
+    dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+    dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+
+Sonra bilgisayarı yeniden başlat ve WSL2'yi varsayılan sürüm yap:
+
+    wsl --set-default-version 2
+
+
+2) BIOS/UEFI'DE SANALLAŞTIRMANIN AÇIK OLDUĞUNDAN EMİN OL
+----------------------------------------------------------
+Docker, sanallaştırma (Intel VT-x / AMD-V) gerektirir. Çoğu makinede
+fabrika ayarı olarak zaten açıktır. Kontrol etmek için:
+
+    Görev Yöneticisi > Performans sekmesi > CPU > sağ altta
+    "Sanallaştırma: Etkin" yazmalı.
+
+"Devre dışı" yazıyorsa bilgisayarı BIOS/UEFI ekranına girerek (genelde
+açılışta Del/F2/F10 tuşu) "Intel Virtualization Technology" veya
+"SVM Mode" ayarını etkinleştirmen gerekir.
+
+
+3) DOCKER DESKTOP'I İNDİR VE KUR
+----------------------------------
+1. Tarayıcıdan şu adrese git:
+       https://www.docker.com/products/docker-desktop/
+2. "Download for Windows" butonuna tıkla, "Docker Desktop Installer.exe"
+   dosyasını indir.
+3. İndirilen .exe dosyasını çalıştır.
+4. Kurulum ekranında "Use WSL 2 instead of Hyper-V" seçeneğinin
+   İŞARETLİ olduğundan emin ol (varsayılan zaten budur).
+5. Kurulum bitince "Close and restart" ile bilgisayarı yeniden başlat.
+
+
+4) DOCKER DESKTOP'I İLK ÇALIŞTIRMA
+-------------------------------------
+1. Bilgisayar açıldıktan sonra Docker Desktop otomatik başlamazsa,
+   Başlat menüsünden "Docker Desktop" uygulamasını aç.
+2. Sistem tepsisinde (saat yanında) balina ikonu görünecek; ikon
+   sabitlenip yeşil/beyaz oluncaya kadar bekle (ilk açılış biraz sürer).
+3. Kullanım şartlarını kabul etmen istenirse kabul et; ücretsiz
+   "Docker Personal" hesabıyla devam edebilirsin, hesap açmak zorunlu
+   değil (atlanabilir).
+
+
+5) KURULUMU DOĞRULA
+----------------------
+Yeni bir PowerShell penceresi aç (yönetici olması gerekmez) ve şunları
+çalıştır:
+
+    docker --version
+    docker compose version
+
+İkisi de bir sürüm numarası basıyorsa kurulum tamamdır.
+
+Test için basit bir konteyner çalıştır:
+
+    docker run hello-world
+
+"Hello from Docker!" mesajını görüyorsan Docker tam olarak çalışıyor.
+
+
+6) BU PROJEYİ ÇALIŞTIRMA
+---------------------------
+Docker Desktop açıkken proje klasöründe (bu dosyanın bulunduğu yer):
+
+    python scripts/migrate_split_db.py   # sadece ilk kurulumda
+    docker compose up --build            # geliştirme ortamı (canlı reload)
+
+Detaylar ve üretim ortamı komutları için README.md dosyasındaki
+"Çalıştırma (Docker Compose)" bölümüne bak.
+
+
+SORUN GİDERME
+================
+- "wsl --install" sonrası hata alırsan: Windows Update'i çalıştırıp
+  Windows'u güncelledikten sonra tekrar dene.
+- Docker Desktop açılırken "WSL 2 installation is incomplete" derse:
+  https://aka.ms/wsl2kernel adresinden WSL2 Linux çekirdek güncelleme
+  paketini indirip kur, sonra Docker Desktop'ı yeniden başlat.
+- Docker Desktop "Virtualization is not enabled" derse: 2. adımdaki
+  BIOS/UEFI sanallaştırma ayarını kontrol et.
+- Şirket/okul bilgisayarındaysan (Hyper-V veya sanallaştırma BIOS'tan
+  kilitli olabilir) BT departmanından yardım isteyebilirsin.

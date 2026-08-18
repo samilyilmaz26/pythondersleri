@@ -4,6 +4,7 @@ services:
     environment:
       PORT: 5001
       DB_PATH: /data/users.db
+      FLASK_DEBUG: 0
     volumes:
       - ./data:/data
     expose:
@@ -14,6 +15,7 @@ services:
     environment:
       PORT: 5002
       DB_PATH: /data/departments.db
+      FLASK_DEBUG: 0
     volumes:
       - ./data:/data
     expose:
@@ -24,6 +26,7 @@ services:
     environment:
       PORT: 5003
       DB_PATH: /data/titles.db
+      FLASK_DEBUG: 0
     volumes:
       - ./data:/data
     expose:
@@ -34,6 +37,7 @@ services:
     environment:
       PORT: 5004
       DB_PATH: /data/students.db
+      FLASK_DEBUG: 0
     volumes:
       - ./data:/data
     expose:
@@ -44,6 +48,7 @@ services:
     environment:
       PORT: 5005
       DB_PATH: /data/instructors.db
+      FLASK_DEBUG: 0
     volumes:
       - ./data:/data
     expose:
@@ -53,6 +58,7 @@ services:
     build: ./web-gateway
     environment:
       PORT: 5000
+      FLASK_DEBUG: 0
       AUTH_SERVICE_URL: http://auth-service:5001
       DEPARTMENT_SERVICE_URL: http://department-service:5002
       TITLE_SERVICE_URL: http://title-service:5003
