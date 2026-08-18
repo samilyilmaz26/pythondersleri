@@ -1,0 +1,15 @@
+{% extends 'copy/layout.html' %}
+{% block page %}
+{% set department = bolum %}
+<h3>Bölüm Güncelle</h3>
+<hr>
+    
+    <form action="{{ url_for('update_department', id=department.id) }}" method="post">
+        <div class="col-md-5">
+            <label for="bolumad" class="form-label">Bölüm Adı</label>
+            <input type="text" class="form-control" id="bolumad" name="bolumad" required  value="{{ department.bolumad }}">
+            
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+        </div>
+    </form>
+{% endblock %} 

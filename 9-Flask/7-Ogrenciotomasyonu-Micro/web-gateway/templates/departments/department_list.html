@@ -1,0 +1,28 @@
+{% extends 'copy/layout.html' %}
+{% block page %}
+    <h3>Bölümler </h3>
+    <a class="btn btn-primary" href="{{ url_for('add_department') }}">Bölüm Ekle</a>
+    <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id </th>
+            <th>Bölüm Adı</th>
+            <th>Güncelle</th>
+            <th>Sil</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for department in bolumler %}
+
+        <tr>
+
+                <td>{{department.id}}</td>
+                <td>{{department.bolumad}}</td>
+                <td><a class="btn btn-success"  href="{{ url_for('update_department', id=department.id) }}">Güncelle</a></td>
+                <td><a class="btn btn-danger"  href="{{ url_for('delete_department', id=department.id) }}">Sil</a></td>
+            </tr>
+
+        {% endfor %}
+   </tbody>
+</table>
+{% endblock %}

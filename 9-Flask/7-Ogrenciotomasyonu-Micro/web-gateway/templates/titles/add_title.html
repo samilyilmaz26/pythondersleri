@@ -1,0 +1,13 @@
+{% extends 'copy/layout.html' %}
+{% block page %}
+<h3>Unvan Ekle</h3>
+<hr>
+    <form action="{{ url_for('add_title') }}" method="post">
+        <div class="col-md-5">
+            <label for="unvanad" class="form-label">Unvan Adı</label>
+            <input type="text" class="form-control" id="unvanad" name="unvanad" required>
+
+            <button type="submit" class="btn btn-primary">Ekle</button>
+        </div>
+    </form>
+{% endblock %}

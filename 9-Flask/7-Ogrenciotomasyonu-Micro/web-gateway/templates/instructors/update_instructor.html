@@ -1,0 +1,52 @@
+{% extends 'copy/layout.html' %}
+{% block page %}
+{% set instructor = egitmen %}
+<h3>Eğitmen Güncelle</h3>
+<hr>
+<H2>{{instructor.full_name}}</H2>
+    <form action="{{ url_for('update_instructor', id=instructor.id) }}" method="post">
+        <div class="col-md-5">
+            <label for="ad" class="form-label">Adı</label>
+            <input type="text" class="form-control" id="ad" name="ad" required  value="{{ instructor.ad }}">
+
+            <label for="soyad" class="form-label">Soyadı</label>
+            <input type="text" class="form-control" id="soyad" name="soyad" required  value="{{ instructor.soyad }}">
+
+            <label for="unvanid" class="form-label">Unvan</label>
+            <select class="form-select" id="unvanid" name="unvanid" required>
+                {% for unvan in unvanlar %}
+                {% if unvan.id == instructor.unvanid %}
+                <option value= "{{unvan.id}}" selected>{{ unvan.unvanad }}</option>
+                {% else %}
+                 <option value= "{{unvan.id}}">{{ unvan.unvanad }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+
+            <label for="bolumid" class="form-label">Bölüm</label>
+            <select class="form-select" id="bolumid" name="bolumid" required>
+                {% for department in bolumler %}
+                {% if department.id == instructor.bolumid %}
+                <option value= "{{department.id}}" selected>{{ department.bolumad }}</option>
+                {% else %}
+                 <option value= "{{department.id}}">{{ department.bolumad }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+
+            <label for="mahalle" class="form-label">Mahalle</label>
+            <input type="text" class="form-control" id="mahalle" name="mahalle" value="{{ instructor.mahalle or '' }}">
+
+            <label for="cadde" class="form-label">Cadde</label>
+            <input type="text" class="form-control" id="cadde" name="cadde" value="{{ instructor.cadde or '' }}">
+
+            <label for="kapino" class="form-label">Kapı No</label>
+            <input type="text" class="form-control" id="kapino" name="kapino" value="{{ instructor.kapino or '' }}">
+
+            <label for="city" class="form-label">Şehir</label>
+            <input type="text" class="form-control" id="city" name="city" value="{{ instructor.city or '' }}">
+
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+        </div>
+    </form>
+{% endblock %}

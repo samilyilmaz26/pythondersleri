@@ -1,0 +1,34 @@
+{% extends 'copy/layout.html' %}
+{% block page %}
+<h3>Üyelik</h3>
+<hr>
+<form method="post">
+  <div class="container">
+  <div class="col-md-5">
+    <div class="mb-3">
+      <label  class="form-label">Kullanıcı Adı</label>
+      <input type="text" class="form-control" name="username" >
+    </div>
+      <div class="mb-3">
+      <label  class="form-label">E-Mail</label>
+      <input type="email" class="form-control" name="email" >
+    </div>
+    <div class="mb-3">
+      <label  class="form-label">Password</label>
+      <input type="password" class="form-control" name="password">
+    </div>
+     <div class="mb-3">
+      <label  class="form-label">Password Tekrar</label>
+      <input type="password" class="form-control" name="confirm">
+    </div>
+    <div class="mb-3 form-check">
+      <input type="checkbox" class="form-check-input" name="accept_tos">
+      <label class="form-check-label" >Şartları Kabul ediyorum</label>
+    </div>
+  </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>
+
+
+{% endblock %}

@@ -1,0 +1,68 @@
+services:
+  auth-service:
+    build: ./services/auth-service
+    environment:
+      PORT: 5001
+      DB_PATH: /data/users.db
+    volumes:
+      - ./data:/data
+    expose:
+      - "5001"
+
+  department-service:
+    build: ./services/department-service
+    environment:
+      PORT: 5002
+      DB_PATH: /data/departments.db
+    volumes:
+      - ./data:/data
+    expose:
+      - "5002"
+
+  title-service:
+    build: ./services/title-service
+    environment:
+      PORT: 5003
+      DB_PATH: /data/titles.db
+    volumes:
+      - ./data:/data
+    expose:
+      - "5003"
+
+  student-service:
+    build: ./services/student-service
+    environment:
+      PORT: 5004
+      DB_PATH: /data/students.db
+    volumes:
+      - ./data:/data
+    expose:
+      - "5004"
+
+  instructor-service:
+    build: ./services/instructor-service
+    environment:
+      PORT: 5005
+      DB_PATH: /data/instructors.db
+    volumes:
+      - ./data:/data
+    expose:
+      - "5005"
+
+  web-gateway:
+    build: ./web-gateway
+    environment:
+      PORT: 5000
+      AUTH_SERVICE_URL: http://auth-service:5001
+      DEPARTMENT_SERVICE_URL: http://department-service:5002
+      TITLE_SERVICE_URL: http://title-service:5003
+      STUDENT_SERVICE_URL: http://student-service:5004
+      INSTRUCTOR_SERVICE_URL: http://instructor-service:5005
+    ports:
+      - "5000:5000"
+    depends_on:
+      - auth-service
+      - department-service
+      - title-service
+      - student-service
+      - instructor-service
