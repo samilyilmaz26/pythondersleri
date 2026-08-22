@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 from fastapi import Depends, FastAPI, Form, Request
@@ -10,6 +11,7 @@ from clients.auth_client import AuthClient, UsernameTakenError
 from clients.base_client import ServiceUnavailableError
 from clients.city_client import CityClient
 from clients.department_client import DepartmentClient
+from clients.student_client import StudentClient
 from clients.title_client import TitleClient
 from services.auth_service import AuthService, NotLoggedInError
 
@@ -17,6 +19,7 @@ AUTH_SERVICE_URL = os.environ.get("AUTH_SERVICE_URL", "http://127.0.0.1:8001")
 DEPARTMENT_SERVICE_URL = os.environ.get("DEPARTMENT_SERVICE_URL", "http://127.0.0.1:8002")
 CITY_SERVICE_URL = os.environ.get("CITY_SERVICE_URL", "http://127.0.0.1:8003")
 TITLE_SERVICE_URL = os.environ.get("TITLE_SERVICE_URL", "http://127.0.0.1:8004")
+STUDENT_SERVICE_URL = os.environ.get("STUDENT_SERVICE_URL", "http://127.0.0.1:8005")
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
 
 app = FastAPI()
@@ -28,6 +31,7 @@ auth = AuthService(auth_client)
 department_client = DepartmentClient(DEPARTMENT_SERVICE_URL)
 city_client = CityClient(CITY_SERVICE_URL)
 title_client = TitleClient(TITLE_SERVICE_URL)
+student_client = StudentClient(STUDENT_SERVICE_URL)
 
 
 async def login_required(request: Request):
@@ -244,3 +248,82 @@ async def delete_title(request: Request, id: int):
     await title_client.delete(id)
     flash(request, "Unvan silme başarılı", "success")
     return RedirectResponse(url="/titles", status_code=303)
+
+
+async def _students_with_labels() -> list[dict]:
+    ogrenciler, sehirler, bolumler = await asyncio.gather(
+        student_client.list_all(), city_client.list_all(), department_client.list_all()
+    )
+    city_names = {c["id"]: c["name"] for c in sehirler}
+    department_names = {d["id"]: d["name"] for d in bolumler}
+    for student in ogrenciler:
+        student["cityname"] = city_names.get(student.get("cityid"))
+        student["departmentname"] = department_names.get(student.get("departmentid"))
+    return ogrenciler
+
+
+@app.get("/students", response_class=HTMLResponse, dependencies=[Depends(login_required)])
+async def students(request: Request):
+    ogrenciler = await _students_with_labels()
+    return templates.TemplateResponse(request, "students/student_list.html", {"students": ogrenciler})
+
+
+@app.get("/students/add", response_class=HTMLResponse, dependencies=[Depends(login_required)])
+async def add_student_form(request: Request):
+    sehirler = await city_client.list_all()
+    bolumler = await department_client.list_all()
+    return templates.TemplateResponse(
+        request, "students/add_student.html", {"cities": sehirler, "departments": bolumler}
+    )
+
+
+@app.post("/students/add", dependencies=[Depends(login_required)])
+async def add_student(
+    request: Request,
+    name: str = Form(...),
+    surname: str = Form(""),
+    street: str = Form(""),
+    number: str = Form(""),
+    cityid: str = Form(""),
+    departmentid: str = Form(""),
+):
+    await student_client.add(
+        name, surname, street, number, int(cityid) if cityid else None, int(departmentid) if departmentid else None
+    )
+    flash(request, "Öğrenci ekleme başarılı", "success")
+    return RedirectResponse(url="/students", status_code=303)
+
+
+@app.get("/students/update/{id}", response_class=HTMLResponse, dependencies=[Depends(login_required)])
+async def update_student_form(request: Request, id: int):
+    student, sehirler, bolumler = await asyncio.gather(
+        student_client.find(id), city_client.list_all(), department_client.list_all()
+    )
+    return templates.TemplateResponse(
+        request, "students/update_student.html", {"student": student, "cities": sehirler, "departments": bolumler}
+    )
+
+
+@app.post("/students/update/{id}", dependencies=[Depends(login_required)])
+async def update_student(
+    request: Request,
+    id: int,
+    name: str = Form(...),
+    surname: str = Form(""),
+    street: str = Form(""),
+    number: str = Form(""),
+    cityid: str = Form(""),
+    departmentid: str = Form(""),
+):
+    await student_client.update(
+        id, name, surname, street, number, int(cityid) if cityid else None, int(departmentid) if departmentid else None
+    )
+    flash(request, "Öğrenci güncelleme başarılı", "success")
+    return RedirectResponse(url="/students", status_code=303)
+
+
+@app.get("/students/delete/{id}", dependencies=[Depends(login_required)])
+async def delete_student(request: Request, id: int):
+    await student_client.delete(id)
+    flash(request, "Öğrenci silme başarılı", "success")
+    return RedirectResponse(url="/students", status_code=303)

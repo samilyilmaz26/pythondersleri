@@ -34,6 +34,14 @@ services:
       - ./data:/data
     expose:
       - "8004"
+  student-service:
+    build: ./services/student-service
+    environment:
+      DB_PATH: /data/students.db
+    volumes:
+      - ./data:/data
+    expose:
+      - "8005"
 
   web-gateway:
     build: ./web-gateway
@@ -42,6 +50,7 @@ services:
       DEPARTMENT_SERVICE_URL: http://department-service:8002
       CITY_SERVICE_URL: http://city-service:8003
       TITLE_SERVICE_URL: http://title-service:8004
+      STUDENT_SERVICE_URL: http://student-service:8005
       SECRET_KEY: change-me-in-production
     ports:
       - "8000:8000"
@@ -50,4 +59,5 @@ services:
       - department-service
       - city-service
       - title-service
+      - student-service
 
