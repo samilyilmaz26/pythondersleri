@@ -1,0 +1,37 @@
+# Sadece geliştirme ortamı için: `docker compose up` bu dosyayı otomatik
+# olarak docker-compose.yml ile birleştirir. Servis kodunu konteynere canlı
+# mount eder ve uvicorn'u --reload ile çalıştırır, böylece kod
+# değişikliklerinde konteynerleri yeniden build etmek gerekmez.
+#
+# Bu dosyayı devre dışı bırakıp saf üretim ayarlarıyla çalıştırmak için:
+#   docker compose -f docker-compose.yml up --build -d
+
+services:
+  user-service:
+    volumes:
+      - ./services/user-service:/app
+      - ./data:/data
+    command: ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+
+  department-service:
+    volumes:
+      - ./services/department-service:/app
+      - ./data:/data
+    command: ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8002", "--reload"]
+
+  city-service:
+    volumes:
+      - ./services/city-service:/app
+      - ./data:/data
+    command: ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8003", "--reload"]
+    ports:
+      - "8003:8003" # for postman
+  title-service:
+    volumes:
+      - ./services/title-service:/app
+      - ./data:/data
+    command: ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8004", "--reload"]
+  web-gateway:
+    volumes:
+      - ./web-gateway:/app
+    command: ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

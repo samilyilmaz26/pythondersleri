@@ -1,0 +1,51 @@
+services:
+  user-service:
+    build: ./services/user-service
+    environment:
+      DB_PATH: /data/users.db
+    volumes:
+      - ./data:/data
+    expose:
+      - "8001"
+
+  department-service:
+    build: ./services/department-service
+    environment:
+      DB_PATH: /data/departments.db
+    volumes:
+      - ./data:/data
+    expose:
+      - "8002"
+
+  city-service:
+    build: ./services/city-service
+    environment:
+      DB_PATH: /data/cities.db
+    volumes:
+      - ./data:/data
+    expose:
+      - "8003"
+
+  title-service:
+    build: ./services/title-service
+    environment:
+      DB_PATH: /data/titles.db
+    volumes:
+      - ./data:/data
+    expose:
+      - "8004"
+
+  web-gateway:
+    build: ./web-gateway
+    environment:
+      AUTH_SERVICE_URL: http://user-service:8001
+      DEPARTMENT_SERVICE_URL: http://department-service:8002
+      CITY_SERVICE_URL: http://city-service:8003
+      SECRET_KEY: change-me-in-production
+    ports:
+      - "8000:8000"
+    depends_on:
+      - user-service
+      - department-service
+      - city-service
+
