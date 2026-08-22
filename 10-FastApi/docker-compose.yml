@@ -41,6 +41,7 @@ services:
       AUTH_SERVICE_URL: http://user-service:8001
       DEPARTMENT_SERVICE_URL: http://department-service:8002
       CITY_SERVICE_URL: http://city-service:8003
+      TITLE_SERVICE_URL: http://title-service:8004
       SECRET_KEY: change-me-in-production
     ports:
       - "8000:8000"
@@ -48,4 +49,5 @@ services:
       - user-service
       - department-service
       - city-service
+      - title-service
 

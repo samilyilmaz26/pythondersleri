@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Unvan Ekle{% endblock %}
+
+{% block content %}
+<h1>Unvan Ekle</h1>
+<hr>
+<form method="post" action="/titles/add" class="col-md-5">
+    <div class="mb-3">
+        <label class="form-label">Unvan Adi</label>
+        <input type="text" class="form-control" name="name" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Ekle</button>
+</form>
+{% endblock %}
