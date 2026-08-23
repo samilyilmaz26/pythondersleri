@@ -1,0 +1,32 @@
+6. adım yaz ve tamamla
+
+6. Adım: İlk senkronizasyon (backfill) — event sistemi kurulmadan önce oluşturulmuş kayıtları read-model'e doldurmak, ve read-model'i her açılışta kaynak servislerle tutarlı hale getiren "self-healing" bir mekanizma kurmak.
+
+Sorun: Event sistemi 3. adımda devreye girdi, ama ondan önce oluşturulmuş şehirler/bölümler/öğrenciler için hiç event yayınlanmadı. Bu yüzden örneğin department_id=1 gibi eski kayıtlar city_lookup/department_lookup'ta yok, dolayısıyla o bölümdeki öğrencilerin departmentname'i boş kalıyor (5. adımdaki testte görüldü).
+
+Çözüm: Gateway her başladığında (consumer'ı başlatmadan HEMEN ÖNCE) 3 servisten (city, department, student) tam listeyi çekip lookup ve read-model tablolarını dolduran tek seferlik bir backfill fonksiyonu çalıştırılır.
+
+6.1 — backfill.py modülü
+
+run_backfill(city_client, department_client, student_client, lookup_repo, read_model_repo) fonksiyonu:
+1. city_client.list_all() -> her şehir için lookup_repo.upsert_city(id, name)
+2. department_client.list_all() -> her bölüm için lookup_repo.upsert_department(id, name)
+3. student_client.list_all() -> her öğrenci için, az önce doldurulan lookup'tan cityname/departmentname okunup read_model_repo.upsert(...) çağrılır
+4. Temizlik: read_model_repo.list_ids() ile mevcut read-model'deki id'ler, öğrenci listesindeki gerçek id'lerle karşılaştırılır; artık kaynak serviste olmayan (gateway kapalıyken silinmiş, event kaçırılmış olabilir) satırlar read-model'den silinir. Böylece backfill sadece eksik veriyi doldurmakla kalmaz, "zombie" satırları da temizleyip read-model'i kaynakla tam tutarlı hale getirir.
+
+6.2 — read_model_repository'ye list_ids() metodu eklenir
+
+Sadece id sütununu çeken hafif bir sorgu (temizlik adımı için tüm satırı çekmeye gerek yok).
+
+6.3 — main.py'de sıralama
+
+startup event'inde sıra şu şekilde olmalı:
+1. create_table() / create_tables() (tablolar yoksa oluştur)
+2. await run_backfill(...) (mevcut durumu senkronize et)
+3. await events_consumer.start() (bundan sonraki değişiklikleri dinlemeye başla)
+
+Bu sıra önemli: backfill önce çalışıp mevcut son durumu yazmalı, consumer ondan SONRA başlamalı. Böylece gateway kapalıyken kuyrukta birikmiş event'ler (durable queue sayesinde kaybolmadılar) consumer başlayınca işlenir ve zaten idempotent upsert'ler olduğu için zarar vermez.
+
+6.4 — Test senaryosu
+
+Event sistemi kurulmadan önce eklenmiş department_id=1 kaydına sahip öğrencinin, gateway restart sonrası departmentname alanının artık dolu gelmesi beklenir. Ayrıca read-model'de olup kaynak serviste artık olmayan bir öğrenci id'si varsa (elle silinmiş bir senaryo simüle edilerek), backfill sonrası bu satırın read-model'den kalktığı doğrulanır.

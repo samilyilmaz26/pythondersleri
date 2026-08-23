@@ -1,0 +1,48 @@
+5. adımı yaz ve tamamla
+
+5. Adım: RabbitMQ'dan event'leri dinleyip read-model'i (student_read_model tablosu) güncel tutacak consumer'ı yazmak.
+
+ÖNEMLİ TASARIM DÜZELTMESİ (2. adımdaki karardan sapma):
+2. adımda "city.created/department.created'ı dinlemiyoruz çünkü henüz o city/department'a bağlı hiçbir öğrenci yok" demiştim. Ama student.created event'i geldiğinde consumer'ın cityname/departmentname'i bir yerden bilmesi gerekiyor - event payload'ında sadece cityid/departmentid var, isim yok. Cross-service HTTP çağrısı yapmadan bunu çözmek için consumer, city/department id->name eşlemesini KENDİ küçük bir lookup tablosunda tutuyor; bu tablo city.*/department.* (created dahil) event'leriyle güncel tutuluyor. Bu yüzden queue'ya city.created ve department.created binding'lerini de eklemem gerekti.
+
+5.1 — web-gateway/requirements.txt'e aio-pika ekleyin
+
+Gateway'in endpoint'leri zaten async def, bu yüzden burada senkron pika değil, asenkron aio-pika kullanılıyor (student/city/department servislerinden farklı olarak).
+
+5.2 — Lookup repository: repo/lookup_repository.py
+
+İki küçük tablo tutar: city_lookup(id, name), department_lookup(id, name). Consumer, student.created/updated geldiğinde buradan cityname/departmentname okuyup read-model'e yazıyor.
+
+5.3 — Consumer modülü: events_consumer.py
+
+EventsConsumer sınıfı:
+- aio_pika.connect_robust ile RabbitMQ'ya bağlanır (bağlantı koparsa otomatik yeniden bağlanır)
+- domain.events (topic, durable) exchange'ini ve student-read-model-queue (durable) queue'sunu declare eder (idempotent - zaten varsa dokunmaz)
+- queue'yu şu routing key'lere bind eder: student.*, city.created, city.updated, city.deleted, department.created, department.updated, department.deleted
+- her mesajı routing_key'e göre bir handler'a yönlendirir:
+  - student.created / student.updated -> lookup'tan cityname/departmentname çekip student_read_model_repo.upsert(...)
+  - student.deleted -> student_read_model_repo.delete(id)
+  - city.created / city.updated -> lookup_repo.upsert_city(...) + student_read_model_repo.update_city_name(...) (cascade)
+  - city.deleted -> lookup_repo.delete_city(...) + student_read_model_repo.clear_city(...)
+  - department.created / department.updated -> lookup_repo.upsert_department(...) + student_read_model_repo.update_department_name(...) (cascade)
+  - department.deleted -> lookup_repo.delete_department(...) + student_read_model_repo.clear_department(...)
+- her mesaj message.process() context manager'ı ile ack'lenir; handler içinde exception olursa mesaj nack'lenip queue'da kalır (kaybolmaz)
+
+5.4 — main.py'ye bağlama
+
+- lookup_repo = LookupRepository(READMODEL_DB_PATH)
+- events_consumer = EventsConsumer(RABBITMQ_URL, student_read_model_repo, lookup_repo)
+- startup event'inde: student_read_model_repo.create_table(), lookup_repo.create_tables(), await events_consumer.start() (arka planda asyncio task olarak başlar, request handling'i bloklamaz)
+- shutdown event'inde: await events_consumer.stop() (bağlantıyı temiz kapatır)
+
+5.5 — Management UI'de eksik binding'leri tamamlama
+
+Queue zaten var ama city.created ve department.created bind edilmemişti (2. adımda kasıtlı atlanmıştı) - management API üzerinden bu iki binding'i de ekliyoruz. Kod tarafında da queue.bind zaten idempotent şekilde tüm 7 routing key'i bağlıyor, böylece ileride queue sıfırdan oluşsa bile kod kendi kendine doğru binding'leri kurar.
+
+5.6 — Build ve test
+
+docker compose up -d --build web-gateway
+
+Test: city-service'te yeni bir şehir oluştur (lookup'a düşer) -> o şehri kullanan bir öğrenci oluştur (student.created, cityname doğru dolu gelmeli) -> öğrenciyi güncelle -> şehrin adını city-service'ten değiştir (cascade: o şehre bağlı TÜM öğrencilerin cityname'i güncellenmeli) -> öğrenciyi sil. Her adımda student_read_model tablosunu doğrudan sorgulayarak doğrula.
+
+NOT: Önceden var olan (event sistemi kurulmadan önce eklenmiş) city/department kayıtları henüz lookup tablosunda yok - onlar için cityname/departmentname, o city/department bir kez update edilene kadar boş kalır. Bu, 6. adımdaki ilk senkronizasyon (backfill) ile çözülecek.

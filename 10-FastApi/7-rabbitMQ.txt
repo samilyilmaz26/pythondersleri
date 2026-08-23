@@ -1,0 +1,27 @@
+7. adım yaz ve tamamla
+
+7. Adım: /students endpoint'ini read-model'e ve sayfalamaya geçirmek — en baştaki "100.000 öğrenci olsa performans sorunu olur mu" sorusunu asıl çözen adım.
+
+Şu ana kadarki adımlarla (event publish + consumer + backfill) student_read_model tablosu her zaman güncel, ama main.py:275'teki _students_with_labels() fonksiyonu hâlâ kullanılmıyordu - /students endpoint'i hâlâ 3 servise senkron gidip Python'da join yapıyordu. Bu adımda:
+
+7.1 — _students_with_labels() kaldırıldı
+
+Artık gerek yok; join işi consumer tarafından önceden (arka planda) yapılıyor.
+
+7.2 — /students endpoint'i sayfalamalı hale getirildi
+
+@app.get("/students") artık page ve page_size query parametrelerini kabul ediyor (varsayılan page=1, page_size=50, üst sınır page_size<=200). student_read_model_repo.list_paginated(page_size, offset) ile SADECE o sayfadaki satırlar çekiliyor - artık kaç öğrenci olursa olsun (100, 100.000) tek seferde bellekte tutulan/render edilen satır sayısı sabit (page_size kadar).
+
+student_read_model_repo.count() ile toplam sayı ve toplam sayfa sayısı hesaplanıp template'e veriliyor.
+
+7.3 — Template'e sayfalama kontrolleri eklendi
+
+students/student_list.html altına "Toplam X öğrenci - Sayfa Y/Z" bilgisi ve Önceki/Sonraki linkleri eklendi.
+
+7.4 — Yazma işlemleri (add/update/delete) değişmedi
+
+/students/add, /students/update, /students/delete hâlâ student_client üzerinden student-service'e HTTP isteği atıyor (doğrudan read-model'e yazılmıyor) - çünkü yazma işleminin "source of truth"u student-service, event orada publish ediliyor, read-model consumer aracılığıyla ASENKRON güncelleniyor. Yani bir öğrenci eklendikten hemen sonraki milisaniyelerde /students sayfası eski listeyi gösterebilir (eventual consistency) - bu, CQRS'in kabul edilen bir trade-off'udur, bu projede gecikme pratikte fark edilmeyecek kadar kısa.
+
+7.5 — Test
+
+Yeni bir öğrenci ekle -> /students sayfasını aç -> öğrencinin (kısa bir gecikmeyle) listede, doğru cityname/departmentname ile göründüğünü doğrula. page_size=1 ile sayfalamanın gerçekten çalıştığını (farklı sayfalarda farklı öğrenci) doğrula.

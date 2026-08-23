@@ -14,6 +14,10 @@ from clients.department_client import DepartmentClient
 from clients.student_client import StudentClient
 from clients.title_client import TitleClient
 from services.auth_service import AuthService, NotLoggedInError
+from repo.student_read_model_repository import StudentReadModelRepository
+from repo.lookup_repository import LookupRepository
+from events_consumer import EventsConsumer
+from backfill import run_backfill
 
 AUTH_SERVICE_URL = os.environ.get("AUTH_SERVICE_URL", "http://127.0.0.1:8001")
 DEPARTMENT_SERVICE_URL = os.environ.get("DEPARTMENT_SERVICE_URL", "http://127.0.0.1:8002")
@@ -21,6 +25,8 @@ CITY_SERVICE_URL = os.environ.get("CITY_SERVICE_URL", "http://127.0.0.1:8003")
 TITLE_SERVICE_URL = os.environ.get("TITLE_SERVICE_URL", "http://127.0.0.1:8004")
 STUDENT_SERVICE_URL = os.environ.get("STUDENT_SERVICE_URL", "http://127.0.0.1:8005")
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
+READMODEL_DB_PATH = os.environ.get("READMODEL_DB_PATH", "student_read_model.db")
+RABBITMQ_URL = os.environ.get("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
@@ -32,6 +38,22 @@ department_client = DepartmentClient(DEPARTMENT_SERVICE_URL)
 city_client = CityClient(CITY_SERVICE_URL)
 title_client = TitleClient(TITLE_SERVICE_URL)
 student_client = StudentClient(STUDENT_SERVICE_URL)
+student_read_model_repo = StudentReadModelRepository(READMODEL_DB_PATH)
+lookup_repo = LookupRepository(READMODEL_DB_PATH)
+events_consumer = EventsConsumer(RABBITMQ_URL, student_read_model_repo, lookup_repo)
+
+
+@app.on_event("startup")
+async def create_read_model_table():
+    student_read_model_repo.create_table()
+    lookup_repo.create_tables()
+    await run_backfill(city_client, department_client, student_client, lookup_repo, student_read_model_repo)
+    await events_consumer.start()
+
+
+@app.on_event("shutdown")
+async def stop_events_consumer():
+    await events_consumer.stop()
 
 
 async def login_required(request: Request):
@@ -250,22 +272,25 @@ async def delete_title(request: Request, id: int):
     return RedirectResponse(url="/titles", status_code=303)
 
 
-async def _students_with_labels() -> list[dict]:
-    ogrenciler, sehirler, bolumler = await asyncio.gather(
-        student_client.list_all(), city_client.list_all(), department_client.list_all()
-    )
-    city_names = {c["id"]: c["name"] for c in sehirler}
-    department_names = {d["id"]: d["name"] for d in bolumler}
-    for student in ogrenciler:
-        student["cityname"] = city_names.get(student.get("cityid"))
-        student["departmentname"] = department_names.get(student.get("departmentid"))
-    return ogrenciler
-
-
 @app.get("/students", response_class=HTMLResponse, dependencies=[Depends(login_required)])
-async def students(request: Request):
-    ogrenciler = await _students_with_labels()
-    return templates.TemplateResponse(request, "students/student_list.html", {"students": ogrenciler})
+async def students(request: Request, page: int = 1, page_size: int = 50):
+    page = max(page, 1)
+    page_size = min(max(page_size, 1), 200)
+    offset = (page - 1) * page_size
+    ogrenciler = student_read_model_repo.list_paginated(page_size, offset)
+    total = student_read_model_repo.count()
+    total_pages = max((total + page_size - 1) // page_size, 1)
+    return templates.TemplateResponse(
+        request,
+        "students/student_list.html",
+        {
+            "students": ogrenciler,
+            "page": page,
+            "page_size": page_size,
+            "total": total,
+            "total_pages": total_pages,
+        },
+    )
 
 
 @app.get("/students/add", response_class=HTMLResponse, dependencies=[Depends(login_required)])

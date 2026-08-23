@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Şehirler{% endblock %}
+
+{% block content %}
+<h1>Şehirler</h1>
+<a class="btn btn-primary mb-3" href="/cities/add">Şehir Ekle</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Şehir Adi</th>
+            <th>Guncelle</th>
+            <th>Sil</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for city in cities %}
+        <tr>
+            <td>{{ city.id }}</td>
+            <td>{{ city.name }}</td>
+            <td><a class="btn btn-success btn-sm" href="/cities/update/{{ city.id }}">Guncelle</a></td>
+            <td><a class="btn btn-danger btn-sm" href="/cities/delete/{{ city.id }}">Sil</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
