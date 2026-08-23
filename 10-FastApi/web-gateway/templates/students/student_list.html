@@ -34,12 +34,12 @@
     </tbody>
 </table>
 <div class="d-flex justify-content-between align-items-center">
-    <span>Toplam {{ total }} öğrenci - Sayfa {{ page }} / {{ total_pages }}</span>
+    <span>Sayfa {{ page }}</span>
     <div>
         {% if page > 1 %}
         <a class="btn btn-secondary btn-sm" href="/students?page={{ page - 1 }}&page_size={{ page_size }}">Önceki</a>
         {% endif %}
-        {% if page < total_pages %}
+        {% if has_next %}
         <a class="btn btn-secondary btn-sm" href="/students?page={{ page + 1 }}&page_size={{ page_size }}">Sonraki</a>
         {% endif %}
     </div>

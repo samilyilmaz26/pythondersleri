@@ -1,0 +1,34 @@
+8. adım yaz ve tamamla
+
+8. Adım: Ölçekte doğrulama (load test) — en baştaki "100.000 öğrenci olsa performans sorunu olur mu" sorusunu gerçek sayılarla kanıtlamak.
+
+8.1 — 100.000 "eski" öğrenci simülasyonu
+
+student-service ile web-gateway aynı ./data host klasörünü paylaştığı için, student-service'in students.db dosyasına HTTP/event sistemi hiç kullanılmadan doğrudan bulk INSERT ile 100.000 satır eklendi (mevcut şehir/bölüm id'leri kullanılarak). Bu, "event sistemi kurulmadan önce zaten var olan büyük bir tablo" senaryosunu simüle etti.
+
+8.2 — Backfill'i çalıştırırken 2 GERÇEK BUG bulundu ve düzeltildi:
+
+BUG 1 - backfill.py per-row bağlantı açıyordu: run_backfill, her öğrenci için read_model_repo.upsert() + lookup_repo.get_city_name()/get_department_name() çağırıyordu; Database context manager her çağrıda YENİ bir sqlite3 bağlantısı açıyor. 100.002 öğrenci için bu ~300.000 ayrı bağlantı açma/kapama demekti - gateway container'ı "Waiting for application startup" adımında süresiz kilitlendi (kaç dakika süreceği belirsiz, testte durduruldu).
+DÜZELTME: student_read_model_repository.py'ye bulk_upsert()/bulk_delete() eklendi (tek bağlantı + executemany). backfill.py, city/department isimlerini SQL'den tekrar tekrar okumak yerine bir kere Python dict'ine alıp bellekten kullanacak, öğrencileri TEK bir bulk_upsert() çağrısıyla yazacak şekilde yeniden yazıldı.
+
+BUG 2 - HTTP client timeout'u 100k'lık listeyi çekmeye yetmiyordu: web-gateway'deki tüm client'lar (BaseClient) varsayılan 3 saniye timeout kullanıyor; student-service'in /students'ı 100k satırda ~2.6 saniyede (12MB JSON) dönüyor - sınırda, bazen timeout'a takılıyor.
+DÜZELTME: main.py'de SADECE backfill için kullanılan ayrı, 30 saniye timeout'lu client'lar (backfill_city_client, backfill_department_client, backfill_student_client) oluşturuldu. İnteraktif isteklerde kullanılan asıl client'ların timeout'u (3s) değiştirilmedi - gerçekten çökmüş bir servisin normal kullanım sırasında hâlâ hızlı hata vermesi isteniyor.
+
+BUG 3 (düzeltildi) - /students'taki count() her istekte tam tablo taraması yapıyordu: 7. adımda sayfalama bilgisi (toplam sayı/sayfa) için eklenen student_read_model_repo.count(), SQLite'ta COUNT(*)'ın O(n) olması yüzünden HER /students isteğinde 100k satırı tarıyordu (508ms/istek) - tam da çözülmeye çalışılan problemi geri getiriyordu.
+DÜZELTME: count() çağrısı kaldırıldı; "Sonraki" linki artık dönen satır sayısının page_size'a eşit olup olmadığına bakılarak gösteriliyor (has_next). Template'teki "Toplam X - Sayfa Y/Z" yerine sadece "Sayfa Y" gösteriliyor.
+
+8.3 — Ölçüm sonuçları (100.002 öğrenci ile)
+
+- /students?page=1 (yeni mimari, count() düzeltmesinden ÖNCE): ~550-670ms
+- /students?page=1 (yeni mimari, düzeltmeden SONRA): ~25-29ms
+- /students?page=1000 (offset=50000): ~262ms
+- /students?page=2000 (offset=100000): ~556ms  <- bilinen, düzeltilmeyen sınırlama (bkz. 8.4)
+- Eski yaklaşım (3 servise senkron HTTP + Python'da join, _students_with_labels mantığı): ~2907ms
+
+8.4 — Kalan, düzeltilmeyen bilinen sınırlama
+
+LIMIT/OFFSET sayfalama, offset büyüdükçe SQLite'ın o kadar satırı atlamak zorunda kalması yüzünden yavaşlar (page 1: 8.8ms, offset=99950: 450ms - saf sorgu seviyesinde ölçüldü). Bu SQL'e özgü, genel bir sınırlama; asıl çözümü keyset/cursor pagination'a geçmek (WHERE id > :son_id ORDER BY id LIMIT :n) ama bu, "sayfa numarasına git" UX'ini "sonraki sayfa" akışına çevirmeyi gerektiriyor - kullanıcıya danışılmadan yapılmadı, ayrı bir adım olarak önerildi.
+
+8.5 — Temizlik
+
+100.000 test satırı student-service'in DB'sinden silindi, gateway restart edilerek backfill'in stale-row temizleme mekanizması read-model'deki 100.000 satırı da otomatik kaldırdı (elle silmeye gerek kalmadı - 6. adımdaki self-healing mekanizmanın kendisi bu temizliği yaptı). Sistem 2 gerçek öğrenciyle eski haline döndü.

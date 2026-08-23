@@ -68,7 +68,7 @@ web-gateway/
     student_read_model.py
   repo/
     base_repository.py
-    student_read_model_repository.py   # create_table, upsert, delete, cascade update, list_paginated, count
+    student_read_model_repository.py   # create_table, upsert/bulk_upsert, delete/bulk_delete, cascade update, list_paginated
     lookup_repository.py               # city_lookup / department_lookup
 ```
 
@@ -83,12 +83,20 @@ docker compose up -d --build
 - Uygulama: http://localhost:8000
 - RabbitMQ yönetim paneli: http://localhost:15672 (guest / guest)
 
+## Ölçekte doğrulama (100.000 öğrenci ile load test)
+
+- `/students?page=1`: **~25-29ms** (yeni mimari) vs **~2907ms** (eski `_students_with_labels` yaklaşımı - 3 servise senkron HTTP + Python'da join)
+- Backfill, `bulk_upsert`/`bulk_delete` sayesinde tek transaction'da çalışır - başlangıçta bunun yerine öğrenci başına ayrı SQLite bağlantısı açan bir sürüm 100k satırda süresiz kilitlenmişti.
+- Backfill'in kendi HTTP client'larının timeout'u 30s'ye çıkarıldı (interaktif isteklerde kullanılanlar 3s'de kalıyor) çünkü 100k satırlık `/students` yanıtı (~12MB JSON) ~2.6 saniye sürüyor.
+
 ## Bilinen sınırlamalar
 
 - `guest`/`guest` sadece geliştirme ortamı için uygundur; üretimde `RABBITMQ_DEFAULT_USER`/`RABBITMQ_DEFAULT_PASS` ile ayrı kullanıcı tanımlanmalı.
 - Eventual consistency nedeniyle bir yazma işleminden hemen sonraki milisaniyelerde `/students` eski veriyi gösterebilir.
 - `title-service` şu an event sistemine dahil değil (öğrenci read-model'inde kullanılmıyor).
+- Sayfalama `LIMIT/OFFSET` kullanıyor: `offset` büyüdükçe (çok derin sayfalarda) sorgu yavaşlar (offset=100000'de ~450ms). Kalıcı çözüm keyset/cursor pagination'a geçmek olur, ama bu "sayfa numarasına git" UX'ini değiştirir - şu an uygulanmadı.
+- `student_read_model_repository.count()` metodu hâlâ mevcut ama `/students` tarafından **çağrılmıyor** - `COUNT(*)` SQLite'ta O(n) olduğu için her istekte çağrılması 100k satırda ~500ms'lik gizli bir maliyet ekliyordu; bunun yerine "Sonraki" linki dönen satır sayısına bakılarak gösteriliyor.
 
 ## Adım adım geliştirme notları
 
-Bu entegrasyonun nasıl adım adım kurulduğu (`1-rabbitMQ.txt` … `7-rabbitMQ.txt`) proje kök dizininde referans olarak duruyor.
+Bu entegrasyonun nasıl adım adım kurulduğu (`1-rabbitMQ.txt` … `8-rabbitMQ.txt`) proje kök dizininde referans olarak duruyor.

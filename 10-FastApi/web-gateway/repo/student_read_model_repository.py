@@ -60,9 +60,45 @@ class StudentReadModelRepository(BaseRepository):
                 (id, name, surname, street, number, cityid, departmentid, cityname, departmentname),
             )
 
+    def bulk_upsert(self, rows) -> None:
+        """Same as upsert() but for many rows in a single connection/transaction.
+
+        `rows` is an iterable of (id, name, surname, street, number, cityid,
+        departmentid, cityname, departmentname) tuples. Used by the startup
+        backfill, which would otherwise open one SQLite connection per
+        student - fine for a handful of rows, but opening ~100k connections
+        one at a time is what made backfill hang at scale.
+        """
+        with self.db as con:
+            con.executemany(
+                """
+                INSERT INTO student_read_model
+                    (id, name, surname, street, number, cityid, departmentid, cityname, departmentname)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET
+                    name = excluded.name,
+                    surname = excluded.surname,
+                    street = excluded.street,
+                    number = excluded.number,
+                    cityid = excluded.cityid,
+                    departmentid = excluded.departmentid,
+                    cityname = excluded.cityname,
+                    departmentname = excluded.departmentname
+                """,
+                rows,
+            )
+
     def delete(self, id) -> None:
         with self.db as con:
             con.execute("delete from student_read_model where id = ?", (id,))
+
+    def bulk_delete(self, ids) -> None:
+        ids = list(ids)
+        if not ids:
+            return
+        with self.db as con:
+            placeholders = ",".join("?" for _ in ids)
+            con.execute(f"delete from student_read_model where id in ({placeholders})", ids)
 
     def update_city_name(self, cityid, cityname) -> None:
         with self.db as con:

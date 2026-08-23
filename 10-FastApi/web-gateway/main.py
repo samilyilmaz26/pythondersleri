@@ -38,6 +38,13 @@ department_client = DepartmentClient(DEPARTMENT_SERVICE_URL)
 city_client = CityClient(CITY_SERVICE_URL)
 title_client = TitleClient(TITLE_SERVICE_URL)
 student_client = StudentClient(STUDENT_SERVICE_URL)
+# Backfill fetches the *entire* city/department/student lists in one go at
+# startup, which can take much longer than the 3s default once the tables
+# are large - the interactive clients above keep the short timeout so a
+# genuinely unreachable service still fails fast during normal requests.
+backfill_city_client = CityClient(CITY_SERVICE_URL, timeout=30.0)
+backfill_department_client = DepartmentClient(DEPARTMENT_SERVICE_URL, timeout=30.0)
+backfill_student_client = StudentClient(STUDENT_SERVICE_URL, timeout=30.0)
 student_read_model_repo = StudentReadModelRepository(READMODEL_DB_PATH)
 lookup_repo = LookupRepository(READMODEL_DB_PATH)
 events_consumer = EventsConsumer(RABBITMQ_URL, student_read_model_repo, lookup_repo)
@@ -47,7 +54,9 @@ events_consumer = EventsConsumer(RABBITMQ_URL, student_read_model_repo, lookup_r
 async def create_read_model_table():
     student_read_model_repo.create_table()
     lookup_repo.create_tables()
-    await run_backfill(city_client, department_client, student_client, lookup_repo, student_read_model_repo)
+    await run_backfill(
+        backfill_city_client, backfill_department_client, backfill_student_client, lookup_repo, student_read_model_repo
+    )
     await events_consumer.start()
 
 
@@ -278,8 +287,7 @@ async def students(request: Request, page: int = 1, page_size: int = 50):
     page_size = min(max(page_size, 1), 200)
     offset = (page - 1) * page_size
     ogrenciler = student_read_model_repo.list_paginated(page_size, offset)
-    total = student_read_model_repo.count()
-    total_pages = max((total + page_size - 1) // page_size, 1)
+    has_next = len(ogrenciler) == page_size
     return templates.TemplateResponse(
         request,
         "students/student_list.html",
@@ -287,8 +295,7 @@ async def students(request: Request, page: int = 1, page_size: int = 50):
             "students": ogrenciler,
             "page": page,
             "page_size": page_size,
-            "total": total,
-            "total_pages": total_pages,
+            "has_next": has_next,
         },
     )
 

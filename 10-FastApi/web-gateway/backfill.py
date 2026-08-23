@@ -15,32 +15,46 @@ async def run_backfill(
     records created before the event system existed (or events missed
     while the gateway was down) still end up correctly denormalized.
     Idempotent: safe to run on every restart.
+
+    Cities/departments are small lists (handful of rows), so upserting them
+    one at a time is fine. Students can be large, so they are written with
+    bulk_upsert/bulk_delete (single connection/transaction) instead of one
+    repository call per row - looping student-by-student with per-row calls
+    opens one SQLite connection per student, which is what made backfill
+    hang once the table reached ~100k rows.
     """
     cities = await city_client.list_all()
+    city_names = {}
     for city in cities:
         lookup_repo.upsert_city(city["id"], city["name"])
+        city_names[city["id"]] = city["name"]
 
     departments = await department_client.list_all()
+    department_names = {}
     for department in departments:
         lookup_repo.upsert_department(department["id"], department["name"])
+        department_names[department["id"]] = department["name"]
 
     students = await student_client.list_all()
-    for student in students:
-        cityid = student.get("cityid")
-        departmentid = student.get("departmentid")
-        read_model_repo.upsert(
-            id=student["id"],
-            name=student.get("name", ""),
-            surname=student.get("surname"),
-            street=student.get("street"),
-            number=student.get("number"),
-            cityid=cityid,
-            departmentid=departmentid,
-            cityname=lookup_repo.get_city_name(cityid),
-            departmentname=lookup_repo.get_department_name(departmentid),
-        )
+
+    def rows():
+        for student in students:
+            cityid = student.get("cityid")
+            departmentid = student.get("departmentid")
+            yield (
+                student["id"],
+                student.get("name", ""),
+                student.get("surname"),
+                student.get("street"),
+                student.get("number"),
+                cityid,
+                departmentid,
+                city_names.get(cityid),
+                department_names.get(departmentid),
+            )
+
+    read_model_repo.bulk_upsert(rows())
 
     current_ids = {student["id"] for student in students}
-    for existing_id in read_model_repo.list_ids():
-        if existing_id not in current_ids:
-            read_model_repo.delete(existing_id)
+    stale_ids = [existing_id for existing_id in read_model_repo.list_ids() if existing_id not in current_ids]
+    read_model_repo.bulk_delete(stale_ids)
