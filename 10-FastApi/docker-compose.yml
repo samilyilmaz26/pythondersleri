@@ -12,7 +12,6 @@ services:
     build: ./services/department-service
     environment:
       DB_PATH: /data/departments.db
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
     volumes:
       - ./data:/data
     expose:
@@ -22,7 +21,6 @@ services:
     build: ./services/city-service
     environment:
       DB_PATH: /data/cities.db
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
     volumes:
       - ./data:/data
     expose:
@@ -40,18 +38,10 @@ services:
     build: ./services/student-service
     environment:
       DB_PATH: /data/students.db
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
     volumes:
       - ./data:/data
     expose:
       - "8005"
-  rabbitmq:
-    image: rabbitmq:3-management
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
 
   web-gateway:
     build: ./web-gateway
@@ -61,11 +51,7 @@ services:
       CITY_SERVICE_URL: http://city-service:8003
       TITLE_SERVICE_URL: http://title-service:8004
       STUDENT_SERVICE_URL: http://student-service:8005
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
-      READMODEL_DB_PATH: /data/student_read_model.db
       SECRET_KEY: change-me-in-production
-    volumes:
-      - ./data:/data
     ports:
       - "8000:8000"
     depends_on:
@@ -74,8 +60,4 @@ services:
       - city-service
       - title-service
       - student-service
-      - rabbitmq
-
-volumes:
-  rabbitmq_data:
 
