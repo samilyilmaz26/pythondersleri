@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<h1>Kayit Ol</h1>
+<hr>
+<form method="post" action="/register" class="col-md-5">
+    <div class="mb-3">
+        <label class="form-label">Kullanici Adi</label>
+        <input type="text" class="form-control" name="username" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">E-Mail</label>
+        <input type="email" class="form-control" name="email" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Sifre</label>
+        <input type="password" class="form-control" name="password" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Sifre Tekrar</label>
+        <input type="password" class="form-control" name="confirm" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>
+{% endblock %}

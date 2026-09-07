@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Öğrenciler{% endblock %}
+
+{% block content %}
+<h1>Öğrenciler</h1>
+<a class="btn btn-primary mb-3" href="/students/add">Öğrenci Ekle</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>Adres</th>
+            <th>Şehir</th>
+            <th>Bölüm</th>
+            <th>Guncelle</th>
+            <th>Sil</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.id }}</td>
+            <td>{{ student.name }}</td>
+            <td>{{ student.surname or "" }}</td>
+            <td>{{ student.street or "" }} {{ student.number or "" }}</td>
+            <td>{{ student.cityname or "" }}</td>
+            <td>{{ student.departmentname or "" }}</td>
+            <td><a class="btn btn-success btn-sm" href="/students/update/{{ student.id }}">Guncelle</a></td>
+            <td><a class="btn btn-danger btn-sm" href="/students/delete/{{ student.id }}">Sil</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="d-flex justify-content-between align-items-center">
+    <span>Sayfa {{ page }}</span>
+    <div>
+        {% if page > 1 %}
+        <a class="btn btn-secondary btn-sm" href="/students?page={{ page - 1 }}&page_size={{ page_size }}">Önceki</a>
+        {% endif %}
+        {% if has_next %}
+        <a class="btn btn-secondary btn-sm" href="/students?page={{ page + 1 }}&page_size={{ page_size }}">Sonraki</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

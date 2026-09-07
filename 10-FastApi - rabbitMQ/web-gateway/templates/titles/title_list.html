@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Unvanlar{% endblock %}
+
+{% block content %}
+<h1>Unvanlar</h1>
+<a class="btn btn-primary mb-3" href="/titles/add">Unvan Ekle</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Unvan Adi</th>
+            <th>Guncelle</th>
+            <th>Sil</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for title in titles %}
+        <tr>
+            <td>{{ title.id }}</td>
+            <td>{{ title.name }}</td>
+            <td><a class="btn btn-success btn-sm" href="/titles/update/{{ title.id }}">Guncelle</a></td>
+            <td><a class="btn btn-danger btn-sm" href="/titles/delete/{{ title.id }}">Sil</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,68 @@
+Tarayıcı
+  ↓
+web-gateway
+  ↓
+AuthService
+  ↓
+AuthClient
+  ↓ HTTP POST /auth/register
+user-service
+  ↓
+UserRepository
+  ↓
+SQLite veritabanı: data/users.db
+
+1. Kullanıcı formu gönderir
+register.html içindeki form:
+Kullanıcı username, email, password ve confirm bilgilerini gönderir.
+
+2. Gateway isteği karşılar
+main.py içindeki route çalışır:
+@app.post("/register")
+async def register(...):
+if password != confirm:
+Bu kontrol başarısızsa user-service çağrılmaz.
+
+3. AuthService çağrılır
+Kontrol başarılıysa:
+Buradaki auth, şu nesnedir:
+AuthService.register() içinde:
+await self.auth_client.register(username, email, password)
+
+4. AuthClient, user-service'e HTTP isteği gönderir
+auth_client.py içinde:
+await client.post(
+    url,
+    json={
+        "username": username,
+        "email": email,
+        "password": password,
+    },
+)
+URL şu şekilde oluşur:
+url = f"{self.base_url}/auth/register"
+
+5. user-service kayıt endpoint'i çalışır
+main.py içindeki endpoint:
+@app.post("/auth/register")
+def register(data: RegisterRequest):
+
+new_id = repo.register(
+    data.username,
+    data.email,
+    hashed_password,
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

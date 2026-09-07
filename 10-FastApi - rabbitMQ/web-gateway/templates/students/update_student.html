@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Öğrenci Guncelle{% endblock %}
+
+{% block content %}
+<h1>Öğrenci Guncelle</h1>
+<hr>
+<form method="post" action="/students/update/{{ student.id }}" class="col-md-5">
+    <div class="mb-3">
+        <label class="form-label">Ad</label>
+        <input type="text" class="form-control" name="name" required value="{{ student.name }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Soyad</label>
+        <input type="text" class="form-control" name="surname" value="{{ student.surname or '' }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Sokak</label>
+        <input type="text" class="form-control" name="street" value="{{ student.street or '' }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Numara</label>
+        <input type="text" class="form-control" name="number" value="{{ student.number or '' }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Şehir</label>
+        <select class="form-select" name="cityid">
+            <option value="">Seçiniz</option>
+            {% for city in cities %}
+            <option value="{{ city.id }}" {% if student.cityid == city.id %}selected{% endif %}>{{ city.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Bölüm</label>
+        <select class="form-select" name="departmentid">
+            <option value="">Seçiniz</option>
+            {% for department in departments %}
+            <option value="{{ department.id }}" {% if student.departmentid == department.id %}selected{% endif %}>{{ department.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Guncelle</button>
+</form>
+{% endblock %}

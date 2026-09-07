@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Şehir Guncelle{% endblock %}
+
+{% block content %}
+<h1>Şehir Guncelle</h1>
+<hr>
+<form method="post" action="/cities/update/{{ city.id }}" class="col-md-5">
+    <div class="mb-3">
+        <label class="form-label">Şehir Adi</label>
+        <input type="text" class="form-control" name="name" required value="{{ city.name }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Guncelle</button>
+</form>
+{% endblock %}

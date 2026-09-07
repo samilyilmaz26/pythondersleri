@@ -1,0 +1,54 @@
+Tarayıcı
+  ↓
+web-gateway
+  ↓
+DepartmentClient
+  ↓ HTTP POST /departments
+department-service
+  ↓
+DepartmentRepository
+  ↓
+SQLite veritabanı: data/departments.db
+
+1. Kullanıcı formu gönderir
+add_department.html içindeki form:
+Kullanıcı sadece name bilgisini gönderir.
+
+2. Gateway isteği karşılar
+main.py içindeki route çalışır:
+@app.post("/departments/add", dependencies=[Depends(login_required)])
+async def add_department(request: Request, name: str = Form(...)):
+Bu route'a girebilmek için önce login_required dependency'si çalışır;
+oturum yoksa department_client hiç çağrılmadan /login'e yönlendirilir.
+
+3. DepartmentClient, department-service'e HTTP isteği gönderir
+department_client.py içinde:
+await department_client.add(name)
+    ↓
+async def add(self, name: str) -> dict:
+    return await self._post("/departments", {"name": name})
+URL şu şekilde oluşur (base_client.py'deki _send içinde):
+url = f"{self.base_url}/departments"
+
+4. department-service ekleme endpoint'i çalışır (veritabanına yeni bir satır ekler)
+main.py içindeki endpoint:
+@app.post("/departments", response_model=DepartmentOut, status_code=201)
+def create_department(data: DepartmentIn):
+    new_id = repo.add(data.name)
+    return DepartmentOut(id=new_id, name=data.name)
+
+5. DepartmentRepository SQL çalıştırır
+department_repository.py içinde:
+def add(self, name) -> int:
+    with self.db as con:
+        cursor = con.cursor()
+        cursor.execute("insert into department (name) values (?)", (name,))
+        return cursor.lastrowid
+
+6. Gateway sonucu yorumlar
+Başarılıysa: flash("Bölüm ekleme başarılı") yazılıp /departments'e
+yönlendirilir (main.py).
+department-service'e hiç ulaşılamazsa: ServiceUnavailableError fırlatılır,
+bunu main.py'deki global exception handler yakalayıp anasayfaya flash
+mesajıyla yönlendirir — add_department route'unun kendisinde try/except
+yazmaya gerek kalmaz.

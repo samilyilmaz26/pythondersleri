@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Bolum Guncelle{% endblock %}
+
+{% block content %}
+<h1>Bolum Guncelle</h1>
+<hr>
+<form method="post" action="/departments/update/{{ department.id }}" class="col-md-5">
+    <div class="mb-3">
+        <label class="form-label">Bolum Adi</label>
+        <input type="text" class="form-control" name="name" required value="{{ department.name }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Guncelle</button>
+</form>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Öğrenci Ekle{% endblock %}
+
+{% block content %}
+<h1>Öğrenci Ekle</h1>
+<hr>
+<form method="post" action="/students/add" class="col-md-5">
+    <div class="mb-3">
+        <label class="form-label">Ad</label>
+        <input type="text" class="form-control" name="name" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Soyad</label>
+        <input type="text" class="form-control" name="surname">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Sokak</label>
+        <input type="text" class="form-control" name="street">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Numara</label>
+        <input type="text" class="form-control" name="number">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Şehir</label>
+        <select class="form-select" name="cityid">
+            <option value="">Seçiniz</option>
+            {% for city in cities %}
+            <option value="{{ city.id }}">{{ city.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Bölüm</label>
+        <select class="form-select" name="departmentid">
+            <option value="">Seçiniz</option>
+            {% for department in departments %}
+            <option value="{{ department.id }}">{{ department.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Ekle</button>
+</form>
+{% endblock %}

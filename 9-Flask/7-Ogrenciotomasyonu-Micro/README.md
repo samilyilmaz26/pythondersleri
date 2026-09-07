@@ -108,18 +108,19 @@ gömülüdür, host'tan canlı mount edilmez.
 Gateway `http://localhost:5000` üzerinden açılır; diğer 5 servis sadece
 konteyner ağı içinde erişilebilir (host'a port açmazlar).
 
-## Yerel çalıştırma (Docker'sız)
-
-Her servis bağımsız bir Flask uygulamasıdır, `PORT` ve `DB_PATH` ortam
-değişkenleriyle yapılandırılır:
-
-```bash
-PORT=5002 DB_PATH=../../data/departments.db python services/department-service/app.py
-# ... diğer 4 servis için de aynı şekilde ...
-AUTH_SERVICE_URL=http://localhost:5001 DEPARTMENT_SERVICE_URL=http://localhost:5002 \
-TITLE_SERVICE_URL=http://localhost:5003 STUDENT_SERVICE_URL=http://localhost:5004 \
-INSTRUCTOR_SERVICE_URL=http://localhost:5005 python web-gateway/app.py
+## Yerel çalıştırma (Docker ile)
+ 
+ docker compose build
+ docker compose up -d
+ 
 ```
+ 
+
+Gateway `http://localhost:5000` üzerinden açılır. Servisleri farklı
+host/portlarda çalıştırıyorsan, gateway'i başlatmadan önce
+`AUTH_SERVICE_URL`, `DEPARTMENT_SERVICE_URL`, `TITLE_SERVICE_URL`,
+`STUDENT_SERVICE_URL`, `INSTRUCTOR_SERVICE_URL` değişkenleriyle
+ilgili servisin adresini geçersiz kılabilirsin.
 
 ## Davranış notu
 

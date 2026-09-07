@@ -1,0 +1,64 @@
+ 2. adımı adım adım anlatırmısın
+
+2. Adım: event exchange/queue topolojisini tasarlamak ve oluşturmak. Önce kavramsal olarak ne yapacağımızı, sonra management UI üzerinden nasıl elle oluşturup deneyeceğinizi anlatıyorum (kod tarafını 3. adımda yazacağız).
+
+2.1 — Exchange tipini ve adını belirleyin
+
+topic tipi exchange kullanacağız çünkü routing key'lerde pattern matching yapabiliyoruz (student.* gibi). Adı: domain.events.
+
+2.2 — Routing key konvansiyonunu belirleyin
+
+Format: <entity>.<action>
+
+- student.created, student.updated, student.deleted
+- city.created, city.updated, city.deleted
+- department.created, department.updated, department.deleted
+
+2.3 — Queue'yu tasarlayın
+
+Gateway'in dinleyeceği tek bir queue yeterli: student-read-model-queue. Bu queue, read-model'i güncel tutmak için ihtiyaç duyduğumuz tüm event'leri dinleyecek.
+
+2.4 — Binding'leri belirleyin
+
+Bu queue şu routing key pattern'lerine bağlanacak:
+- student.* (öğrenci CRUD'ları)
+- city.updated, city.deleted (şehir adı değişirse/silinirse cascade update)
+- department.updated, department.deleted (bölüm adı değişirse/silinirse cascade update)
+
+(city.created/department.created dinlemiyoruz çünkü henüz o city/department'a bağlı hiçbir öğrenci yok, güncellenecek satır yok.)
+
+2.5 — Management UI'de elle deneyin (öğrenmek için)
+
+http://localhost:15672 → Exchanges sekmesi → Add a new exchange:
+- Name: domain.events
+- Type: topic
+- Durability: Durable
+  → Add exchange
+
+Sonra Queues sekmesi → Add a new queue:
+- Name: student-read-model-queue
+- Durability: Durable
+  → Add queue
+
+Queue'yu oluşturduktan sonra queue'nun detay sayfasına girin → Bindings bölümünden domain.events exchange'ine sırayla şu routing key'lerle bağlayın: student.*, city.updated, city.deleted, department.updated, department.deleted.
+
+2.6 — Payload şemasını belirleyin
+
+Her event JSON body içinde en az şunları taşımalı:
+// student.created / student.updated
+{"id": 1, "name": "...", "surname": "...", "street": "...", "number": "...", "cityid": 3, "departmentid": 2}
+
+// student.deleted
+{"id": 1}
+
+// city.updated
+{"id": 3, "name": "İstanbul"}
+
+// department.updated
+{"id": 2, "name": "Bilgisayar Mühendisliği"}
+
+2.7 — Test edin (opsiyonel ama önerilir)
+
+Exchange'in Publish message sekmesinden routing key student.created, payload olarak yukarıdaki JSON'ı girip Publish deyin. Sonra student-read-model-queue'nun Get messages kısmından mesajı görüp göremediğinizi kontrol edin — bu, binding'lerin doğru çalıştığının kanıtı olur.
+
+Bunları UI'de manuel yapıp deneyin, sonuçları/ekran görüntüsünü paylaşın; onaylayınca 3. adımda bu exchange/queue'yu kodla (aio-pika ile, servisler ayağa kalkarken otomatik) tanımlayacağız — üretimde elle UI'de oluşturmak yerine kod bunu kendisi declare edecek.

@@ -1,0 +1,24 @@
+Docker ile calistirma (onerilen, tek komut):
+docker compose up --build   # ilk seferinde veya requirements.txt değişince
+docker compose up           # sadece Python/HTML kodu değiştiyse yeterli
+http://127.0.0.1:8000/
+
+Durdurmak icin:
+docker compose down
+
+---
+
+Docker'siz, servisleri elle calistirma:
+
+user-service (auth):
+cd services/user-service
+python -m uvicorn main:app --reload --port 8001
+
+department-service:
+cd services/department-service
+python -m uvicorn main:app --reload --port 8002
+
+web-gateway:
+cd web-gateway
+python -m uvicorn main:app --reload --port 8000
+http://127.0.0.1:8000/

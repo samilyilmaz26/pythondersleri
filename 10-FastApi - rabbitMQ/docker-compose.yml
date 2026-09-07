@@ -1,0 +1,81 @@
+services:
+  user-service:
+    build: ./services/user-service
+    environment:
+      DB_PATH: /data/users.db
+    volumes:
+      - ./data:/data
+    expose:
+      - "8001"
+
+  department-service:
+    build: ./services/department-service
+    environment:
+      DB_PATH: /data/departments.db
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+    volumes:
+      - ./data:/data
+    expose:
+      - "8002"
+
+  city-service:
+    build: ./services/city-service
+    environment:
+      DB_PATH: /data/cities.db
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+    volumes:
+      - ./data:/data
+    expose:
+      - "8003"
+
+  title-service:
+    build: ./services/title-service
+    environment:
+      DB_PATH: /data/titles.db
+    volumes:
+      - ./data:/data
+    expose:
+      - "8004"
+  student-service:
+    build: ./services/student-service
+    environment:
+      DB_PATH: /data/students.db
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+    volumes:
+      - ./data:/data
+    expose:
+      - "8005"
+  rabbitmq:
+    image: rabbitmq:3-management
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  web-gateway:
+    build: ./web-gateway
+    environment:
+      AUTH_SERVICE_URL: http://user-service:8001
+      DEPARTMENT_SERVICE_URL: http://department-service:8002
+      CITY_SERVICE_URL: http://city-service:8003
+      TITLE_SERVICE_URL: http://title-service:8004
+      STUDENT_SERVICE_URL: http://student-service:8005
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      READMODEL_DB_PATH: /data/student_read_model.db
+      SECRET_KEY: change-me-in-production
+    volumes:
+      - ./data:/data
+    ports:
+      - "8000:8000"
+    depends_on:
+      - user-service
+      - department-service
+      - city-service
+      - title-service
+      - student-service
+      - rabbitmq
+
+volumes:
+  rabbitmq_data:
+
